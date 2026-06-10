@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kevin — Chicago Marathon 2026</title>
+<style>
+  :root {
+    --bg: #0f0f13;
+    --surface: #18181f;
+    --surface2: #22222d;
+    --border: #2e2e3d;
+    --text: #e8e8f0;
+    --muted: #7a7a95;
+    --accent: #e05c2e;
+    --accent2: #5b8ef0;
+    --accent3: #4ecb88;
+    --accent4: #f0c040;
+    --easy: #4ecb88;
+    --quality: #5b8ef0;
+    --long: #e05c2e;
+    --race: #f0c040;
+    --rest: #3a3a4d;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.5; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(15,15,19,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 0; padding: 0 24px;
+  }
+  .nav-brand { font-size: 13px; font-weight: 700; letter-spacing: .08em; color: var(--accent); text-transform: uppercase; margin-right: 32px; padding: 16px 0; }
+  .nav-word { font-size: 11px; letter-spacing: .15em; color: var(--muted); margin-left: auto; text-transform: uppercase; padding: 16px 0; }
+  .tab { padding: 16px 20px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all .2s; white-space: nowrap; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--text); border-bottom-color: var(--accent); }
+
+  /* LAYOUT */
+  .page { display: none; padding: 32px 24px; max-width: 1100px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  /* TYPOGRAPHY */
+  h1 { font-size: 28px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 4px; }
+  h2 { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+  h3 { font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+  p { color: var(--muted); line-height: 1.7; }
+
+  /* CARDS */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+  .card-sm { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+  /* STAT TILES */
+  .stat { }
+  .stat-label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .stat-value { font-size: 28px; font-weight: 700; letter-spacing: -.02em; }
+  .stat-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .stat-value.green { color: var(--accent3); }
+  .stat-value.orange { color: var(--accent); }
+  .stat-value.blue { color: var(--accent2); }
+  .stat-value.yellow { color: var(--accent4); }
+
+  /* BADGE */
+  .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: .04em; }
+  .badge-orange { background: rgba(224,92,46,.15); color: var(--accent); }
+  .badge-blue { background: rgba(91,142,240,.15); color: var(--accent2); }
+  .badge-green { background: rgba(78,203,136,.15); color: var(--accent3); }
+  .badge-yellow { background: rgba(240,192,64,.15); color: var(--accent4); }
+  .badge-muted { background: rgba(122,122,149,.15); color: var(--muted); }
+
+  /* TIMELINE */
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 1px; background: var(--border); }
+  .tl-item { position: relative; margin-bottom: 32px; }
+  .tl-dot { position: absolute; left: -24px; top: 4px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--bg); }
+  .tl-dot.orange { background: var(--accent); }
+  .tl-dot.blue { background: var(--accent2); }
+  .tl-dot.green { background: var(--accent3); }
+  .tl-dot.yellow { background: var(--accent4); }
+  .tl-dot.muted { background: var(--muted); }
+  .tl-meta { font-size: 11px; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; margin-bottom: 4px; }
+  .tl-title { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+  .tl-result { font-size: 13px; color: var(--accent4); font-weight: 600; margin-bottom: 8px; }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.7; }
+  .tl-lessons { margin-top: 12px; }
+  .tl-lesson { display: flex; gap: 8px; margin-bottom: 6px; font-size: 13px; color: var(--muted); }
+  .tl-lesson::before { content: '→'; color: var(--accent); flex-shrink: 0; }
+
+  /* MILEAGE BAR */
+  .mileage-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; }
+  .mileage-label { width: 72px; color: var(--muted); flex-shrink: 0; text-align: right; }
+  .mileage-bar-wrap { flex: 1; background: var(--surface2); border-radius: 3px; height: 8px; overflow: hidden; }
+  .mileage-bar { height: 100%; border-radius: 3px; transition: width .3s; }
+  .mileage-val { width: 36px; color: var(--text); font-weight: 600; }
+
+  /* PACE CHIP */
+  .pace-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .pace-row:last-child { border-bottom: none; }
+  .pace-name { font-size: 13px; color: var(--text); }
+  .pace-val { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  /* PLAN TABLE */
+  .week-block { margin-bottom: 24px; }
+  .week-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .week-num { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .week-title { font-size: 14px; font-weight: 600; }
+  .week-miles { margin-left: auto; font-size: 12px; color: var(--muted); }
+
+  .day-row { display: grid; grid-template-columns: 56px 56px 1fr auto; gap: 8px; align-items: start; padding: 7px 0; border-bottom: 1px solid rgba(46,46,61,.5); }
+  .day-row:last-child { border-bottom: none; }
+  .day-row.done { opacity: .55; }
+  .day-row.done .day-run { text-decoration: none; }
+  .day-row.today { background: rgba(224,92,46,.05); border-radius: 6px; padding: 7px 8px; margin: 0 -8px; }
+  .day-row.race-day { background: rgba(240,192,64,.05); border-radius: 6px; padding: 7px 8px; margin: 0 -8px; }
+  .day-date { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .day-name { font-size: 12px; color: var(--muted); }
+  .day-run { font-size: 13px; color: var(--text); }
+  .day-miles { font-size: 12px; color: var(--muted); text-align: right; white-space: nowrap; }
+  .check { display: inline-flex; width: 16px; height: 16px; border-radius: 50%; background: var(--accent3); align-items: center; justify-content: center; margin-right: 4px; flex-shrink: 0; }
+  .check svg { width: 9px; height: 9px; }
+
+  /* EFFORT DOTS */
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+  .dot-easy { background: var(--easy); }
+  .dot-quality { background: var(--quality); }
+  .dot-long { background: var(--long); }
+  .dot-race { background: var(--race); }
+  .dot-rest { background: var(--rest); }
+
+  /* HIGHLIGHT BOX */
+  .highlight { background: rgba(224,92,46,.08); border: 1px solid rgba(224,92,46,.2); border-radius: 10px; padding: 16px 20px; margin-bottom: 16px; }
+  .highlight.blue { background: rgba(91,142,240,.08); border-color: rgba(91,142,240,.2); }
+  .highlight.green { background: rgba(78,203,136,.08); border-color: rgba(78,203,136,.2); }
+  .highlight.yellow { background: rgba(240,192,64,.08); border-color: rgba(240,192,64,.2); }
+  .highlight-title { font-size: 12px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; margin-bottom: 6px; }
+  .highlight.blue .highlight-title { color: var(--accent2); }
+  .highlight.green .highlight-title { color: var(--accent3); }
+  .highlight .highlight-title { color: var(--accent); }
+  .highlight.yellow .highlight-title { color: var(--accent4); }
+  .highlight p { font-size: 13px; }
+
+  /* MARATHON CHART */
+  .race-chart { display: flex; align-items: flex-end; gap: 12px; height: 120px; padding-top: 16px; }
+  .race-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+  .race-bar { width: 100%; border-radius: 4px 4px 0 0; position: relative; min-height: 8px; transition: all .3s; }
+  .race-bar:hover { filter: brightness(1.2); }
+  .race-label { font-size: 10px; color: var(--muted); text-align: center; white-space: nowrap; }
+  .race-time { font-size: 11px; font-weight: 700; color: var(--text); text-align: center; }
+
+  /* RECENT RUNS */
+  .run-row { display: flex; align-items: baseline; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(46,46,61,.5); font-size: 13px; }
+  .run-row:last-child { border-bottom: none; }
+  .run-date { color: var(--muted); font-size: 11px; width: 56px; flex-shrink: 0; }
+  .run-name { flex: 1; }
+  .run-dist { color: var(--muted); font-size: 12px; width: 44px; text-align: right; flex-shrink: 0; }
+  .run-pace { font-size: 12px; font-weight: 600; color: var(--accent4); width: 52px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+  .run-hr { font-size: 11px; color: var(--muted); width: 44px; text-align: right; flex-shrink: 0; }
+
+  /* PROGRESS */
+  .progress-wrap { background: var(--surface2); border-radius: 6px; height: 6px; overflow: hidden; margin-top: 8px; }
+  .progress-bar { height: 100%; border-radius: 6px; background: var(--accent); }
+
+  /* DIVIDER */
+  hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+  /* SCROLLABLE PLAN */
+  .plan-scroll { max-height: 75vh; overflow-y: auto; padding-right: 4px; }
+  .plan-scroll::-webkit-scrollbar { width: 4px; }
+  .plan-scroll::-webkit-scrollbar-track { background: transparent; }
+  .plan-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* PHASE TAG */
+  .phase-tag { font-size: 10px; padding: 1px 6px; border-radius: 4px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+  .phase-race { background: rgba(240,192,64,.15); color: var(--accent4); }
+  .phase-base { background: rgba(78,203,136,.15); color: var(--accent3); }
+  .phase-build { background: rgba(91,142,240,.15); color: var(--accent2); }
+  .phase-peak { background: rgba(224,92,46,.15); color: var(--accent); }
+  .phase-recovery { background: rgba(122,122,149,.15); color: var(--muted); }
+  .phase-taper { background: rgba(224,92,46,.08); color: var(--accent); }
+
+  @media (max-width: 700px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    nav { overflow-x: auto; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">Kevin D-P</div>
+  <div class="tab active" onclick="showTab('history')">Training History</div>
+  <div class="tab" onclick="showTab('current')">Where I'm At</div>
+  <div class="tab" onclick="showTab('plan')">Chicago Plan</div>
+  <div class="tab" onclick="showTab('review')">Week in Review</div>
+  <div class="tab" onclick="showTab('block')">Block So Far</div>
+  <div class="nav-word">RELENTLESS</div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- TAB 1: TRAINING HISTORY                                -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="page active" id="tab-history">
+
+  <div style="margin-bottom: 28px;">
+    <h1>Training History</h1>
+    <p>Every cycle, every lesson. The thread from 2017 to London — and what it means for Chicago.</p>
+  </div>
+
+  <!-- Marathon progression chart -->
+  <div class="card" style="margin-bottom: 24px;">
+    <h3>Marathon Progression</h3>
+    <div class="race-chart">
+      <div class="race-bar-wrap">
+        <div class="race-time">3:59</div>
+        <div class="race-bar" style="height:76%; background:var(--accent3);" title="Chicago 2017: 3:59:39 — First marathon"></div>
+        <div class="race-label">Chi '17</div>
+      </div>
+      <div class="race-bar-wrap">
+        <div class="race-time">3:58</div>
+        <div class="race-bar" style="height:78%; background:var(--accent3);" title="Illinois 2018: 3:58:59"></div>
+        <div class="race-label">IL '18</div>
+      </div>
+      <div class="race-bar-wrap">
+        <div class="race-time">4:04</div>
+        <div class="race-bar" style="height:70%; background:var(--accent3);" title="Indy 2023: 4:04:54"></div>
+        <div class="race-label">Indy '23</div>
+      </div>
+      <div class="race-bar-wrap">
+        <div class="race-time">4:15</div>
+        <div class="race-bar" style="height:56%; background:var(--accent4);" title="Illinois 2024: 4:15:01"></div>
+        <div class="race-label">IL '24</div>
+      </div>
+      <div class="race-bar-wrap">
+        <div class="race-time">4:24</div>
+        <div class="race-bar" style="height:44%; background:var(--accent4);" title="Berlin 2024: 4:24:43"></div>
+        <div class="race-label">Berlin '24</div>
+      </div>
+      <div class="race-bar-wrap">
+        <div class="race-time" style="color:var(--muted)">4:36</div>
+        <div class="race-bar" style="height:28%; background:var(--muted); opacity:.5;" title="Chicago 2025: 4:36:24 — T2 fun run, not a race effort"></div>
+        <div class="race-label" style="color:var(--muted)">Chi '25 †</div>
+      </div>
+      <div class="race-bar-wrap">
+        <div class="race-time">4:19</div>
+        <div class="race-bar" style="height:52%; background:var(--accent2);" title="London 2026: 4:19:37"></div>
+        <div class="race-label">London '26</div>
+      </div>
+      <div class="race-bar-wrap">
+        <div class="race-time">3:55?</div>
+        <div class="race-bar" style="height:90%; background: linear-gradient(to top, var(--accent), var(--accent4)); opacity:.4; border: 1px dashed var(--accent4);" title="Chicago 2026 target"></div>
+        <div class="race-label" style="color:var(--accent4);">Chi '26 🎯</div>
+      </div>
+    </div>
+    <p style="font-size:11px; margin-top:12px; color: var(--muted);">Bars sized relative to sub-3:55 ceiling. Higher = faster. † Chi '25 was a Team 2 End AIDS fun run — intentionally not raced.</p>
+  </div>
+
+  <!-- Timeline -->
+  <div class="timeline">
+
+    <!-- 2017 -->
+    <div class="tl-item">
+      <div class="tl-dot orange"></div>
+      <div class="tl-meta">October 2017 · Chicago Marathon</div>
+      <div class="tl-title">First Marathon — Sub-4 Out of the Gate</div>
+      <div class="tl-result">3:59:39 · 9:00/mi · HR 170</div>
+      <div class="tl-body">First marathon and already sub-4. That's not a beginner result — it tells you there was real aerobic capacity there from the start. HR 170 average means you were working hard, not just cruising to the finish. Sets the ceiling you've been trying to get back under ever since.</div>
+      <div class="tl-lessons">
+        <div class="tl-lesson">Sub-4 on your first attempt is a meaningful data point — the base was there</div>
+        <div class="tl-lesson">HR 170 at 9:00/mi pace: you had more speed than pacing strategy at that point</div>
+      </div>
+    </div>
+
+    <!-- 2018 Illinois PR -->
+    <div class="tl-item">
+      <div class="tl-dot green"></div>
+      <div class="tl-meta">April 2018 · Illinois Marathon</div>
+      <div class="tl-title">The PR — Still Standing</div>
+      <div class="tl-result">3:58:59 · 9:03/mi · HR 174</div>
+      <div class="tl-body">Went 20 seconds faster than your Chicago debut. Still your marathon PR. HR 174 average is the highest of any marathon — you left nothing out there. What's notable: this was pre-FFRT, pre-Heavy AF as a structured program. Raw fitness and motivation.</div>
+      <div class="tl-lessons">
+        <div class="tl-lesson">HR 174 average: hardest race effort you've ever put out in a marathon</div>
+        <div class="tl-lesson">The structure and coaching you have now should produce better results — the raw fitness was always there</div>
+      </div>
+    </div>
+
+    <!-- Gap years -->
+    <div class="tl-item">
+      <div class="tl-dot muted"></div>
+      <div class="tl-meta">2019 – 2022 · Maintenance / COVID Gap</div>
+      <div class="tl-title">The Quiet Years</div>
+      <div class="tl-body">Sporadic running. Peloton, occasional races. Nothing sustained. Building back was slow — low mileage through early 2023. The fitness base from 2018 largely faded.</div>
+    </div>
+
+    <!-- 2023 -->
+    <div class="tl-item">
+      <div class="tl-dot blue"></div>
+      <div class="tl-meta">Jan – Oct 2023 · Indy Monumental Block</div>
+      <div class="tl-title">The Rebuild — Your Best Training Year</div>
+      <div class="tl-result">Chicago Half: 1:50:54 (8:22/mi) · Indy Marathon: 4:04:54 (9:15/mi)</div>
+      <div class="tl-body">This was your breakout year. Weekly mileage climbed from single digits in January to 46mi in September. The Chicago Half in September — 1:50:54 — remains your half marathon PR. Indy in October was your first structured marathon build result. You peaked at 46mi that week.</div>
+      <div class="tl-lessons">
+        <div class="tl-lesson">1:50:54 half predicts a 3:50 marathon by Riegel — there's a significant gap to close</div>
+        <div class="tl-lesson">Peak at 46mi is close to what Chicago 2026 targets — you've been here before</div>
+        <div class="tl-lesson">September half followed by October marathon = good race sequencing</div>
+        <div class="tl-lesson">The wall at Indy showed up too — muscular endurance was the limiter even then</div>
+      </div>
+    </div>
+
+    <!-- 2024 Spring -->
+    <div class="tl-item">
+      <div class="tl-dot yellow"></div>
+      <div class="tl-meta">Jan – May 2024 · Illinois Marathon Block</div>
+      <div class="tl-title">The Regression Begins</div>
+      <div class="tl-result">F3 Half: 2:08:34 · Illinois Marathon: 4:15:01 (9:39/mi)</div>
+      <div class="tl-body">Higher peak mileage than 2023 (up to 39mi by April) but worse marathon result. The issue: consistency gaps. Several weeks in January with near-zero mileage. F3 half in February at 2:08 showed fitness wasn't where it needed to be, and Illinois confirmed it — 10 minutes slower than Indy despite more training.</div>
+      <div class="tl-lessons">
+        <div class="tl-lesson">Mileage gaps (especially Jan) cost you fitness that peak weeks couldn't recover</div>
+        <div class="tl-lesson">4:15 on a block that showed 39mi weeks means the quality wasn't there yet</div>
+        <div class="tl-lesson">F3 half as a training race is now a recurring tool — it's a reliable fitness signal</div>
+      </div>
+    </div>
+
+    <!-- 2024 Berlin -->
+    <div class="tl-item">
+      <div class="tl-dot yellow"></div>
+      <div class="tl-meta">May – Sep 2024 · Berlin Block · First FFRT Block</div>
+      <div class="tl-title">High Volume, FFRT Structure Begins, Rough Result</div>
+      <div class="tl-result">Lifetime Half: 1:59:05 · Berlin Marathon: 4:24:43 (9:52/mi)</div>
+      <div class="tl-body">First full block training with FFRT. Highest mileage to that point — 47mi peak weeks, consistent 40+ miles all summer. But Berlin was your slowest marathon at that point. The Lifetime half in May (1:59) was a warning sign. Summer heat and accumulated fatigue likely blunted the fitness gains from the mileage. HAF lifting sessions were consistent (7-10/month) alongside the run volume — the full training load may have been heavier than it looked on paper.</div>
+      <div class="tl-lessons">
+        <div class="tl-lesson">More miles + FFRT workouts + HAF lifting = significant total load — recovery was probably the gap</div>
+        <div class="tl-lesson">The summer heat block (July–Aug 40+ mi) built fatigue alongside fitness</div>
+        <div class="tl-lesson">1:59 half → 4:24 marathon gap is where the muscular endurance limiter first showed up clearly</div>
+      </div>
+    </div>
+
+    <!-- 2025 Chicago T2 -->
+    <div class="tl-item">
+      <div class="tl-dot muted"></div>
+      <div class="tl-meta">Oct 2024 – Oct 2025 · Chicago 2025 · Team 2 End AIDS</div>
+      <div class="tl-title">Not a Race — A Mission Run</div>
+      <div class="tl-result">Chicago Marathon: 4:36:24 · Fun run, 5 bathroom stops, no race effort</div>
+      <div class="tl-body">Chicago 2025 was run with Team 2 End AIDS — the volume and workouts were built around the team's needs, not a PR attempt. You treated it as a fun run and ran accordingly (five bathroom breaks being the clearest evidence). The 4:36 is not a fitness data point — it's a different kind of race with a different purpose. The training block that preceded it did show lower mileage (33-34mi peaks) but the race result shouldn't be read as a performance collapse.</div>
+      <div class="tl-lessons">
+        <div class="tl-lesson">This race doesn't belong in the performance trendline — it was intentionally untimed</div>
+        <div class="tl-lesson">Running for a cause with a team changes the objective entirely — that's a good thing</div>
+        <div class="tl-lesson">Disney Dopey (Jan 2025) as a transition kept the habit alive before the London build</div>
+      </div>
+    </div>
+
+    <!-- London 2026 -->
+    <div class="tl-item">
+      <div class="tl-dot green"></div>
+      <div class="tl-meta">Nov 2025 – Apr 2026 · London Block · FFRT + Heavy AF</div>
+      <div class="tl-title">The Real Return — London 4:19:37</div>
+      <div class="tl-result">Shamrock Shuffle: 39:44 (7:25/mi!) · F3 Half: 2:03:45 · London: 4:19:37</div>
+      <div class="tl-body">The most complete training block yet. Peak weeks hit 44-48mi, FFRT workouts were consistent, and Heavy AF produced real strength gains — a 195lb squat 2RM in March, then a 1RM test the week before Shamrock. Shamrock Shuffle (39:44 at 7:25/mi) was a major speed signal. London was your best-paced marathon: first 16 miles nearly perfect, wall at 18. Same failure mode, but later. The strength work from HAF is visibly supporting the running — no breakdown injuries through a hard block.</div>
+      <div class="tl-lessons">
+        <div class="tl-lesson">48mi peak weeks → 4:19: mileage correlation confirmed again</div>
+        <div class="tl-lesson">The wall moved to mile 18 — real muscular endurance progress from consistent HAF + higher mileage</div>
+        <div class="tl-lesson">Strength PRs during marathon training, not in spite of it — HAF periodization is working</div>
+        <div class="tl-lesson">55mi peak + Tuesday mid-week long runs for Chicago is the logical next step</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- The through-line -->
+  <div class="card" style="margin-top: 8px;">
+    <h3>The Through-Line</h3>
+    <div class="grid-2" style="gap:16px;">
+      <div>
+        <div class="highlight orange">
+          <div class="highlight-title">The Consistent Pattern</div>
+          <p>In every race effort — 2017, 2018, 2023, 2024, London 2026 — you hit a wall between miles 16 and 19. It moves later as fitness improves. London pushed it to 18. Chicago needs to push it past 20. That only happens with higher mileage, longer long runs, and more MP work in training. (Chicago 2025 is excluded — that was a Team 2 fun run, not a race effort.)</p>
+        </div>
+      </div>
+      <div>
+        <div class="highlight green">
+          <div class="highlight-title">What's Actually Working</div>
+          <p>FFRT structure is building real speed — the Shamrock Shuffle PR and Soldier Field 10 both show aerobic power is strong. The Tuesday mid-week long run addition is the smart new variable for Chicago. Your half times are competitive; the marathon just needs the muscular endurance to match.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- TAB 2: WHERE I'M AT                                   -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="page" id="tab-current">
+<!-- WHERE_AT_START -->
+
+  <div style="margin-bottom: 28px;">
+    <h1>Where I'm At</h1>
+    <p>Week 1 is done. Chicago 13.1 result: <strong>1:52:21 (8:27/mi)</strong>. Here's the picture heading into the build.</p>
+  </div>
+
+  <div class="grid-4" style="margin-bottom: 20px;">
+    <div class="card-sm">
+      <div class="stat-label">London Result</div>
+      <div class="stat-value orange">4:19:37</div>
+      <div class="stat-sub">Best since 2018 PR</div>
+    </div>
+    <div class="card-sm">
+      <div class="stat-label">Chicago 13.1</div>
+      <div class="stat-value blue">1:52:21</div>
+      <div class="stat-sub">8:27/mi · HR 166 · Jun 7</div>
+    </div>
+    <div class="card-sm">
+      <div class="stat-label">Last 4 Weeks Avg</div>
+      <div class="stat-value green">28mi</div>
+      <div class="stat-sub">Week 1 underway</div>
+    </div>
+    <div class="card-sm">
+      <div class="stat-label">Chicago Target</div>
+      <div class="stat-value yellow">3:55</div>
+      <div class="stat-sub">8:58/mi · 24min PR</div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 20px;">
+    <div class="card">
+      <h3>Recent Runs</h3>
+      <div class="run-row"><div class="run-date">Jun 7</div><div class="run-name">Chicago 13.1 - 1:52:21 <span class="badge badge-yellow">RACE</span></div><div class="run-dist">13.3mi</div><div class="run-pace">8:27</div><div class="run-hr">165</div></div><div class="run-row"><div class="run-date">Jun 7</div><div class="run-name">Morning Run</div><div class="run-dist">0.6mi</div><div class="run-pace">10:09</div><div class="run-hr">124</div></div><div class="run-row"><div class="run-date">Jun 5</div><div class="run-name">Hot and Wet 13.1 Shakeout + Strides</div><div class="run-dist">2.4mi</div><div class="run-pace">10:58</div><div class="run-hr">129</div></div><div class="run-row"><div class="run-date">Jun 3</div><div class="run-name">Global Running Day ft. FFRT Half Time Fartlek <span class="badge badge-blue">FFRT</span></div><div class="run-dist">7.8mi</div><div class="run-pace">9:19</div><div class="run-hr">150</div></div><div class="run-row"><div class="run-date">Jun 2</div><div class="run-name">50 Easy</div><div class="run-dist">4.6mi</div><div class="run-pace">10:50</div><div class="run-hr">129</div></div><div class="run-row"><div class="run-date">Jun 1</div><div class="run-name">Afternoon Run</div><div class="run-dist">4.9mi</div><div class="run-pace">10:16</div><div class="run-hr">126</div></div><div class="run-row"><div class="run-date">May 30</div><div class="run-name">13.1 Course Preview</div><div class="run-dist">10.1mi</div><div class="run-pace">10:46</div><div class="run-hr">139</div></div><div class="run-row"><div class="run-date">May 29</div><div class="run-name">Run home past the Kasama line</div><div class="run-dist">1.7mi</div><div class="run-pace">11:11</div><div class="run-hr">140</div></div><div class="run-row"><div class="run-date">May 29</div><div class="run-name">Morning Run</div><div class="run-dist">1.9mi</div><div class="run-pace">10:13</div><div class="run-hr">133</div></div><div class="run-row"><div class="run-date">May 27</div><div class="run-name">FFRT - Alternating Half Miles <span class="badge badge-blue">FFRT</span></div><div class="run-dist">7.7mi</div><div class="run-pace">9:25</div><div class="run-hr">150</div></div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom: 16px;">
+        <h3>What the Data Says</h3>
+        <div class="highlight blue" style="margin-bottom: 12px;">
+          <div class="highlight-title">Aerobic Base: Strong</div>
+          <p>Soldier Field 10 at 9:04/mi with HR 157 on May 23 — 4 weeks post-London — is a meaningful fitness signal. Easy runs sitting 10:15–10:45 at HR 130–140, exactly where they should be.</p>
+        </div>
+        <div class="highlight orange" style="margin-bottom: 12px;">
+          <div class="highlight-title">Muscular Endurance: The Gap</div>
+          <p>London confirmed: you can run 16 miles at marathon pace. Miles 17–26 are where the legs give out — not the lungs. Tuesday mid-week long runs (building to 12–14mi) directly target this.</p>
+        </div>
+        <div class="highlight green" style="margin-bottom: 0;">
+          <div class="highlight-title">Speed: There</div>
+          <p>Shamrock Shuffle 39:44 (7:25/mi). Half Time Fartlek closing at 7:30. Speed system is healthy — the issue is sustaining it past mile 18, not generating it.</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Training Paces</h3>
+        <div class="pace-row"><div class="pace-name"><span class="dot dot-easy"></span>Easy / Aerobic</div>
+          <div class="pace-val" style="color:var(--easy)">9:57 – 10:56</div></div>
+        <div class="pace-row"><div class="pace-name"><span class="dot dot-easy"></span>Recovery</div>
+          <div class="pace-val" style="color:var(--muted)">11:00 – 11:30</div></div>
+        <div class="pace-row"><div class="pace-name"><span class="dot" style="background:var(--accent4)"></span>Marathon Pace (VDOT equiv)</div>
+          <div class="pace-val" style="color:var(--accent4)">8:52</div></div>
+        <div class="pace-row"><div class="pace-name"><span class="dot dot-quality"></span>Half Marathon Pace</div>
+          <div class="pace-val" style="color:var(--accent2)">8:34</div></div>
+        <div class="pace-row"><div class="pace-name"><span class="dot dot-quality"></span>Threshold / Tempo</div>
+          <div class="pace-val" style="color:var(--accent2)">8:18</div></div>
+        <div class="pace-row"><div class="pace-name"><span class="dot dot-quality"></span>10K Pace</div>
+          <div class="pace-val" style="color:var(--accent2)">8:10</div></div>
+        <div class="pace-row"><div class="pace-name"><span class="dot dot-quality"></span>5K / Interval</div>
+          <div class="pace-val" style="color:var(--accent2)">7:52 / 7:39</div></div>
+        <div class="pace-row"><div class="pace-name"><span class="dot dot-quality"></span>Repetition</div>
+          <div class="pace-val" style="color:var(--accent2)">7:15</div></div>
+        <p style="font-size:11px; margin-top:12px;">VDOT from Chicago 13.1 (1:52:21). Equiv marathon: 3:52:35.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="highlight green"><div class="highlight-title">Chicago 13.1 — 1:52:21 ✓</div><p>8:27/mi avg · HR 165.6 · Paces are set for the block. VDOT marathon equivalent: <strong style="color:var(--accent3);">3:52:35</strong> (8:52/mi) — faster than your 3:55 goal. Train at 8:52 MP, race conservatively at 8:58. Week 2: 25mi — Post-race recovery — easy all week, no FFRT, 10-12mi Sat.</p></div>
+
+  <hr>
+
+  <div class="card" style="margin-bottom: 20px;">
+    <h3>Heavy AF — The Strength Picture</h3>
+    <div class="grid-2" style="gap: 16px;">
+      <div>
+        <p style="font-size:13px; margin-bottom:12px;">Lifting has been consistent through every training block — typically 2–3x/week alongside running. London block produced real concurrent strength gains:</p>
+        <div class="pace-row"><div class="pace-name">Squat 2RM (Mar 2026)</div><div class="pace-val" style="color:var(--accent3)">195 lb</div></div>
+        <div class="pace-row"><div class="pace-name">Current frequency</div><div class="pace-val" style="color:var(--accent4)">~3x/week</div></div>
+        <div class="pace-row"><div class="pace-name">Lagree / Solidcore</div><div class="pace-val" style="color:var(--accent2)">Thursdays (opt)</div></div>
+      </div>
+      <div>
+        <div class="highlight green">
+          <div class="highlight-title">Goal: Maintain Through Peak</div>
+          <p>Keep 2–3 HAF sessions/week through Week 10. Drop to 1–2 sessions in peak weeks. No new PRs during taper — just maintenance and movement quality.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Sunday, June 07 at 11:55 PM</div>
+
+<!-- WHERE_AT_END -->
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- TAB 3: CHICAGO PLAN                                   -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="page" id="tab-plan">
+
+  <div style="margin-bottom: 20px; display:flex; align-items:baseline; gap:16px; flex-wrap:wrap;">
+    <h1>Chicago 2026 Plan</h1>
+    <span class="badge badge-yellow">RELENTLESS</span>
+    <span style="color:var(--muted); font-size:13px;">Sub-3:55 · 8:58/mi · Oct 11, 2026</span>
+  </div>
+
+  <!-- PLAN_PROGRESS_START -->
+<div class="card" style="margin-bottom: 20px;">
+    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+      <span style="font-size:12px; font-weight:600;">Block Progress</span>
+      <span style="font-size:12px; color:var(--muted);">Week 1 of 19 · 125 days to go</span>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar" style="width:4.5%;"></div>
+    </div>
+    <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:11px; color:var(--muted);">
+      <span>Jun 1</span>
+      <span>Oct 11 · Chicago Marathon</span>
+    </div>
+  </div>
+<!-- PLAN_PROGRESS_END -->
+
+  <!-- Legend -->
+  <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:20px; font-size:12px;">
+    <span><span class="dot dot-easy"></span>Easy</span>
+    <span><span class="dot dot-quality"></span>Quality</span>
+    <span><span class="dot dot-long"></span>Long Run</span>
+    <span><span class="dot dot-race"></span>Race</span>
+    <span><span class="dot dot-rest"></span>Rest/Cross</span>
+    <span style="margin-left:8px;">
+      <span class="check" style="width:14px;height:14px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:var(--accent3);">
+        <svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span> = Done
+    </span>
+  </div>
+
+  <div class="plan-scroll">
+
+    <!-- WEEK 1 -->
+    <div class="week-block">
+      <div class="week-header">
+        <span class="week-num">Wk 1</span>
+        <span class="week-title">Jun 1–7</span>
+        <span class="phase-tag phase-race">Race</span>
+        <span class="week-miles">~33mi</span>
+      </div>
+
+      <div class="day-row">
+        <div class="day-date">Jun 1</div>
+        <div class="day-name" style="color:var(--easy)">Mon</div>
+        <div class="day-run"><span class="check"><svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="dot dot-easy"></span>45-55min easy (5mi) + HAF</div>
+        <div class="day-miles">4.9mi ✓</div>
+      </div>
+      <div class="day-row">
+        <div class="day-date">Jun 2</div>
+        <div class="day-name" style="color:var(--easy)">Tue</div>
+        <div class="day-run"><span class="check"><svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="dot dot-easy"></span>45min easy (4.5mi)</div>
+        <div class="day-miles">4.6mi ✓</div>
+      </div>
+      <div class="day-row">
+        <div class="day-date">Jun 3</div>
+        <div class="day-name" style="color:var(--accent2)">Wed</div>
+        <div class="day-run"><span class="check"><svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="dot dot-quality"></span>Half Time Fartlek (FFRT) (8mi)</div>
+        <div class="day-miles">7.9mi ✓</div>
+      </div>
+      <div class="day-row">
+        <div class="day-date">Jun 4</div>
+        <div class="day-name">Thu</div>
+        <div class="day-run"><span class="check"><svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="dot dot-rest"></span>REST</div>
+        <div class="day-miles">—</div>
+      </div>
+      <div class="day-row">
+        <div class="day-date">Jun 5</div>
+        <div class="day-name">Fri</div>
+        <div class="day-run"><span class="check"><svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="dot dot-easy"></span>20min + strides (2mi)</div>
+        <div class="day-miles">2.4mi ✓</div>
+      </div>
+      <div class="day-row">
+        <div class="day-date">Jun 6</div>
+        <div class="day-name">Sat</div>
+        <div class="day-run"><span class="check"><svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="dot dot-rest"></span>REST — Lay out race kit. Hydrate. Sleep.</div>
+        <div class="day-miles">— ✓</div>
+      </div>
+      <div class="day-row">
+        <div class="day-date">Jun 7</div>
+        <div class="day-name">Sun</div>
+        <div class="day-run"><span class="check"><svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="dot dot-race"></span><strong>CHICAGO 13.1 — FULL SEND</strong> · <strong style="color:var(--accent3);">1:52:21 (8:27/mi)</strong> <span class="badge badge-green">DONE</span></div>
+        <div class="day-miles">13.3mi ✓</div>
+      </div>
+    </div>
+
+    <!-- PLAN_WEEK_2_START -->
+<div class="week-block">
+      <div class="week-header">
+        <span class="week-num">Wk 2</span>
+        <span class="week-title">Jun 8–14</span>
+        <span class="phase-tag phase-recovery">Recovery</span>
+        <span class="week-miles">~25mi</span>
+      </div>
+      <div class="day-row"><div class="day-date">Jun 8</div><div class="day-name">Mon</div><div class="day-run"><span class="dot dot-easy"></span>20–25min easy or rest <span style="font-size:11px;color:var(--muted);opacity:.7;">· No strides. HAF fine if upper body.</span></div><div class="day-miles"></div></div>
+      <div class="day-row"><div class="day-date">Jun 9</div><div class="day-name">Tue</div><div class="day-run"><span class="dot dot-easy"></span>45–50min easy (~5mi) <span style="font-size:11px;color:var(--muted);opacity:.7;">· Still no strides. Just aerobic.</span></div><div class="day-miles"></div></div>
+      <div class="day-row"><div class="day-date">Jun 10</div><div class="day-name">Wed</div><div class="day-run"><span class="dot dot-easy"></span>40–50min easy (~4–5mi) <span style="font-size:11px;color:var(--muted);opacity:.7;">· Instead of FFRT. 10:00–10:30 pace.</span></div><div class="day-miles"></div></div>
+      <div class="day-row"><div class="day-date">Jun 11</div><div class="day-name">Thu</div><div class="day-run"><span class="dot dot-rest"></span>REST / optional Lagree</div><div class="day-miles">—</div></div>
+      <div class="day-row"><div class="day-date">Jun 12</div><div class="day-name">Fri</div><div class="day-run"><span class="dot dot-easy"></span>50min easy + HAF <span style="font-size:11px;color:var(--muted);opacity:.7;">· Back to normal.</span></div><div class="day-miles"></div></div>
+      <div class="day-row"><div class="day-date">Jun 13</div><div class="day-name">Sat</div><div class="day-run"><span class="dot dot-long"></span>10–12mi easy <span style="font-size:11px;color:var(--muted);opacity:.7;">· The priority. Arrive fresh.</span></div><div class="day-miles"></div></div>
+      <div class="day-row"><div class="day-date">Jun 14</div><div class="day-name">Sun</div><div class="day-run"><span class="dot dot-rest"></span>REST</div><div class="day-miles">—</div></div>
+    </div>
+<!-- PLAN_WEEK_2_END -->
+
+    <!-- WEEK 3 -->
+    <div class="week-block">
+      <div class="week-header">
+        <span class="week-num">Wk 3</span>
+        <span class="week-title">Jun 15–21</span>
+        <span class="phase-tag phase-base">Base</span>
+        <span class="week-miles">~39mi</span>
+      </div>
+      <div class="day-row"><div class="day-date">Jun 15</div><div class="day-name">Mon</div><div class="day-run"><span class="dot dot-easy"></span>50min easy (5mi) + HAF</div><div class="day-miles">5mi</div></div>
+      <div class="day-row"><div class="day-date">Jun 16</div><div class="day-name">Tue</div><div class="day-run"><span class="dot dot-easy"></span>65min easy (~7mi) ★ first extended Tue</div><div class="day-miles">7mi</div></div>
+      <div class="day-row"><div class="day-date">Jun 17</div><div class="day-name">Wed</div><div class="day-run"><span class="dot dot-quality"></span>Funnel of Fun: 15@GMP+10, 10@HMP, 1-3x5@10K — FFRT + HAF (8mi)</div><div class="day-miles">8mi</div></div>
+      <div class="day-row"><div class="day-date">Jun 18</div><div class="day-name">Thu</div><div class="day-run"><span class="dot dot-rest"></span>REST · Optional Lagree</div><div class="day-miles">—</div></div>
+      <div class="day-row"><div class="day-date">Jun 19</div><div class="day-name">Fri</div><div class="day-run"><span class="dot dot-easy"></span>50min easy (5mi) + HAF</div><div class="day-miles">5mi</div></div>
+      <div class="day-row"><div class="day-date">Jun 20</div><div class="day-name">Sat</div><div class="day-run"><span class="dot dot-long"></span>11-13mi easy</div><div class="day-miles">12mi</div></div>
+      <div class="day-row"><div class="day-date">Jun 21</div><div class="day-name">Sun</div><div class="day-run"><span class="dot dot-rest"></span>REST or recovery · Ricky Byrdsong 8K/5K option</div><div class="day-miles">—</div></div>
+    </div>
+
+    <!-- WEEK 4 -->
+    <div class="week-block">
+      <div class="week-header">
+        <span class="week-num">Wk 4</span>
+        <span class="week-title">Jun 22–28</span>
+        <span class="phase-tag phase-base">Base</span>
+        <span class="week-miles">~42mi</span>
+      </div>
+      <div class="day-row"><div class="day-date">Jun 22</div><div class="day-name">Mon</div><div class="day-run"><span class="dot dot-easy"></span>55min easy + 6 strides (6mi) + HAF</div><div class="day-miles">6mi</div></div>
+      <div class="day-row"><div class="day-date">Jun 23</div><div class="day-name">Tue</div><div class="day-run"><span class="dot dot-easy"></span>75min easy (~8mi) ★</div><div class="day-miles">8mi</div></div>
+      <div class="day-row"><div class="day-date">Jun 24</div><div class="day-name">Wed</div><div class="day-run"><span class="dot dot-quality"></span>Yasso 800s: 8-10x800 @ 3:50-3:55 Yasso — FFRT + HAF</div><div class="day-miles">8mi</div></div>
+      <div class="day-row"><div class="day-date">Jun 25</div><div class="day-name">Thu</div><div class="day-run"><span class="dot dot-rest"></span>REST · Optional Lagree</div><div class="day-miles">—</div></div>
+      <div class="day-row"><div class="day-date">Jun 26</div><div class="day-name">Fri</div><div class="day-run"><span class="dot dot-easy"></span>50min easy (5mi) + HAF</div><div class="day-miles">5mi</div></div>
+      <div class="day-row"><div class="day-date">Jun 27</div><div class="day-name">Sat</div><div class="day-run"><span class="dot dot-long"></span>12-14mi w/ MP surges (0.25mi surge/mile for 5-7mi) — FFRT Lincoln Sq</div><div class="day-miles">13mi</div></div>
+      <div class="day-row"><div class="day-date">Jun 28</div><div class="day-name">Sun</div><div class="day-run"><span class="dot dot-rest"></span>REST or recovery</div><div class="day-miles">—</div></div>
+    </div>
+
+    <!-- WEEK 5 -->
+    <div class="week-block">
+      <div class="week-header">
+        <span class="week-num">Wk 5</span>
+        <span class="week-title">Jun 29 – Jul 5</span>
+        <span class="phase-tag phase-recovery">Recovery</span>
+        <span class="week-miles">~36mi</span>
+      </div>
+      <div class="day-row"><div class="day-date">Jun 29</div><div class="day-name">Mon</div><div class="day-run"><span class="dot dot-easy"></span>50min easy + 6 strides (5.5mi) + HAF</div><div class="day-miles">5.5mi</div></div>
+      <div class="day-row"><div class="day-date">Jun 30</div><div class="day-name">Tue</div><div class="day-run"><span class="dot dot-easy"></span>55min easy (5.5mi) — recovery week, don't extend</div><div class="day-miles">5.5mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 1</div><div class="day-name">Wed</div><div class="day-run"><span class="dot dot-quality"></span>2min on/off: 6-12x2min @ threshold, 2min @ LR pace — FFRT + HAF</div><div class="day-miles">8mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 2</div><div class="day-name">Thu</div><div class="day-run"><span class="dot dot-rest"></span>REST · Optional Lagree</div><div class="day-miles">—</div></div>
+      <div class="day-row"><div class="day-date">Jul 3</div><div class="day-name">Fri</div><div class="day-run"><span class="dot dot-easy"></span>45min easy (4.5mi) + HAF</div><div class="day-miles">4.5mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 4</div><div class="day-name">Sat</div><div class="day-run"><span class="dot dot-long"></span>10-12mi easy · 4 on the 4th race option (Elmhurst)</div><div class="day-miles">11mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 5</div><div class="day-name">Sun</div><div class="day-run"><span class="dot dot-rest"></span>REST or recovery</div><div class="day-miles">—</div></div>
+    </div>
+
+    <!-- WEEK 6 -->
+    <div class="week-block">
+      <div class="week-header">
+        <span class="week-num">Wk 6</span>
+        <span class="week-title">Jul 6–12</span>
+        <span class="phase-tag phase-build">Build</span>
+        <span class="week-miles">~44mi</span>
+      </div>
+      <div class="day-row"><div class="day-date">Jul 6</div><div class="day-name">Mon</div><div class="day-run"><span class="dot dot-quality"></span>Progression: 3-5mi current MP → GMP + HAF</div><div class="day-miles">7mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 7</div><div class="day-name">Tue</div><div class="day-run"><span class="dot dot-easy"></span>80min easy (~9mi) ★ — run by HR in heat</div><div class="day-miles">9mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 8</div><div class="day-name">Wed</div><div class="day-run"><span class="dot dot-quality"></span>3x3 Matrix: 2-3 sets of 4x300@mile, 100m jog — FFRT + HAF</div><div class="day-miles">7mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 9</div><div class="day-name">Thu</div><div class="day-run"><span class="dot dot-rest"></span>REST · Optional Lagree</div><div class="day-miles">—</div></div>
+      <div class="day-row"><div class="day-date">Jul 10</div><div class="day-name">Fri</div><div class="day-run"><span class="dot dot-easy"></span>55min easy (6mi)</div><div class="day-miles">6mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 11</div><div class="day-name">Sat</div><div class="day-run"><span class="dot dot-long"></span>14mi easy (opt last 4@CMP)</div><div class="day-miles">14mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 12</div><div class="day-name">Sun</div><div class="day-run"><span class="dot dot-rest"></span>REST or recovery</div><div class="day-miles">—</div></div>
+    </div>
+
+    <!-- WEEK 7 -->
+    <div class="week-block">
+      <div class="week-header">
+        <span class="week-num">Wk 7</span>
+        <span class="week-title">Jul 13–19</span>
+        <span class="phase-tag phase-build">Build</span>
+        <span class="week-miles">~46mi</span>
+      </div>
+      <div class="day-row"><div class="day-date">Jul 13</div><div class="day-name">Mon</div><div class="day-run"><span class="dot dot-easy"></span>55min easy (6mi) + HAF</div><div class="day-miles">6mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 14</div><div class="day-name">Tue</div><div class="day-run"><span class="dot dot-easy"></span>90min easy (10mi) ★ — FIRST DOUBLE-DIGIT TUESDAY</div><div class="day-miles">10mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 15</div><div class="day-name">Wed</div><div class="day-run"><span class="dot dot-quality"></span>Ladder: 6-10x200, 3-5x400, 1-2x800 (200m recovery) — FFRT + HAF</div><div class="day-miles">7mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 16</div><div class="day-name">Thu</div><div class="day-run"><span class="dot dot-rest"></span>REST · Optional Lagree</div><div class="day-miles">—</div></div>
+      <div class="day-row"><div class="day-date">Jul 17</div><div class="day-name">Fri</div><div class="day-run"><span class="dot dot-easy"></span>55min easy (6mi)</div><div class="day-miles">6mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 18</div><div class="day-name">Sat</div><div class="day-run"><span class="dot dot-long"></span>15mi w/ 4x(1mi@GMP, 1mi@GMP+30 float)</div><div class="day-miles">15mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 19</div><div class="day-name">Sun</div><div class="day-run"><span class="dot dot-rest"></span>REST or recovery</div><div class="day-miles">—</div></div>
+    </div>
+
+    <!-- WEEK 8 -->
+    <div class="week-block">
+      <div class="week-header">
+        <span class="week-num">Wk 8</span>
+        <span class="week-title">Jul 20–26</span>
+        <span class="phase-tag phase-build">Build ★ First 50</span>
+        <span class="week-miles">~50mi</span>
+      </div>
+      <div class="day-row"><div class="day-date">Jul 20</div><div class="day-name">Mon</div><div class="day-run"><span class="dot dot-easy"></span>55min easy + 6 strides (6mi) + HAF · First 50-mile week!</div><div class="day-miles">6mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 21</div><div class="day-name">Tue</div><div class="day-run"><span class="dot dot-easy"></span>100min easy (11mi) ★</div><div class="day-miles">11mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 22</div><div class="day-name">Wed</div><div class="day-run"><span class="dot dot-quality"></span>Michigan: 1mi@10K, 2K tempo, 1200@5K, 2K tempo, 800@3K, 2K tempo, 400 AUG — FFRT + HAF</div><div class="day-miles">9mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 23</div><div class="day-name">Thu</div><div class="day-run"><span class="dot dot-rest"></span>REST · Optional Lagree</div><div class="day-miles">—</div></div>
+      <div class="day-row"><div class="day-date">Jul 24</div><div class="day-name">Fri</div><div class="day-run"><span class="dot dot-easy"></span>55min easy (6mi) + HAF — monitor for Sat</div><div class="day-miles">6mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 25</div><div class="day-name">Sat</div><div class="day-run"><span class="dot dot-long"></span>16mi w/ 3x2@MP (1mi EZ recovery) · fuel practice</div><div class="day-miles">16mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 26</div><div class="day-name">Sun</div><div class="day-run"><span class="dot dot-rest"></span>REST or recovery</div><div class="day-miles">—</div></div>
+    </div>
+
+    <!-- WEEK 9 -->
+    <div class="week-block">
+      <div class="week-header">
+        <span class="week-num">Wk 9</span>
+        <span class="week-title">Jul 27 – Aug 2</span>
+        <span class="phase-tag phase-recovery">Recovery</span>
+        <span class="week-miles">~40mi</span>
+      </div>
+      <div class="day-row"><div class="day-date">Jul 27</div><div class="day-name">Mon</div><div class="day-run"><span class="dot dot-easy"></span>50min easy (5mi) + HAF · Cutback week</div><div class="day-miles">5mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 28</div><div class="day-name">Tue</div><div class="day-run"><span class="dot dot-easy"></span>65min easy (~7mi) ★ — don't extend</div><div class="day-miles">7mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 29</div><div class="day-name">Wed</div><div class="day-run"><span class="dot dot-quality"></span>Lumberjack: alternating circuits — FFRT + HAF</div><div class="day-miles">9mi</div></div>
+      <div class="day-row"><div class="day-date">Jul 30</div><div class="day-name">Thu</div><div class="day-run"><span class="dot dot-rest"></span>REST · Optional Lagree</div><div class="day-miles">—</div></div>
+      <div class="day-row"><div class="day-date">Jul 31</div><div class="day-name">Fri</div><div class="day-run"><span class="dot dot-easy"></span>45min easy (4.5mi)</div><div class="day-miles">4.5mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 1</div><div class="day-name">Sat</div><div class="day-run"><span class="dot dot-long"></span>13mi easy</div><div class="day-miles">13mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 2</div><div class="day-name">Sun</div><div class="day-run"><span class="dot dot-rest"></span>REST or recovery</div><div class="day-miles">—</div></div>
+    </div>
+
+    <!-- WEEK 10 -->
+    <div class="week-block">
+      <div class="week-header">
+        <span class="week-num">Wk 10</span>
+        <span class="week-title">Aug 3–9</span>
+        <span class="phase-tag phase-peak">Race Prep ★</span>
+        <span class="week-miles">~54mi</span>
+      </div>
+      <div class="day-row"><div class="day-date">Aug 3</div><div class="day-name">Mon</div><div class="day-run"><span class="dot dot-quality"></span>HMP tempo 3-4mi + HAF</div><div class="day-miles">7mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 4</div><div class="day-name">Tue</div><div class="day-run"><span class="dot dot-easy"></span>12mi easy ★</div><div class="day-miles">12mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 5</div><div class="day-name">Wed</div><div class="day-run"><span class="dot dot-quality"></span>1K Sandwich: HMP-1K@5K-HMP — FFRT + HAF</div><div class="day-miles">10mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 6</div><div class="day-name">Thu</div><div class="day-run"><span class="dot dot-rest"></span>REST · Optional Lagree</div><div class="day-miles">—</div></div>
+      <div class="day-row"><div class="day-date">Aug 7</div><div class="day-name">Fri</div><div class="day-run"><span class="dot dot-easy"></span>55min easy (6mi)</div><div class="day-miles">6mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 8</div><div class="day-name">Sat</div><div class="day-run"><span class="dot dot-long"></span>18mi w/ MP progression</div><div class="day-miles">18mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 9</div><div class="day-name">Sun</div><div class="day-run"><span class="dot dot-rest"></span>REST</div><div class="day-miles">—</div></div>
+    </div>
+
+    <!-- WEEK 11 -->
+    <div class="week-block">
+      <div class="week-header">
+        <span class="week-num">Wk 11</span>
+        <span class="week-title">Aug 10–16</span>
+        <span class="phase-tag phase-peak">Race Prep ★</span>
+        <span class="week-miles">~54mi</span>
+      </div>
+      <div class="day-row"><div class="day-date">Aug 10</div><div class="day-name">Mon</div><div class="day-run"><span class="dot dot-easy"></span>55min easy + 6 strides (6mi) + HAF</div><div class="day-miles">6mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 11</div><div class="day-name">Tue</div><div class="day-run"><span class="dot dot-easy"></span>12mi easy ★</div><div class="day-miles">12mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 12</div><div class="day-name">Wed</div><div class="day-run"><span class="dot dot-quality"></span>10min threshold — FFRT + HAF</div><div class="day-miles">9mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 13</div><div class="day-name">Thu</div><div class="day-run"><span class="dot dot-rest"></span>REST · Optional Lagree</div><div class="day-miles">—</div></div>
+      <div class="day-row"><div class="day-date">Aug 14</div><div class="day-name">Fri</div><div class="day-run"><span class="dot dot-easy"></span>55min easy (6mi)</div><div class="day-miles">6mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 15</div><div class="day-name">Sat</div><div class="day-run"><span class="dot dot-long"></span>19mi w/ 4x3@MP — Waterfall Glen</div><div class="day-miles">19mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 16</div><div class="day-name">Sun</div><div class="day-run"><span class="dot dot-rest"></span>REST</div><div class="day-miles">—</div></div>
+    </div>
+
+    <!-- WEEK 12 -->
+    <div class="week-block">
+      <div class="week-header">
+        <span class="week-num">Wk 12</span>
+        <span class="week-title">Aug 17–23</span>
+        <span class="phase-tag phase-recovery">Recovery</span>
+        <span class="week-miles">~39mi</span>
+      </div>
+      <div class="day-row"><div class="day-date">Aug 17</div><div class="day-name">Mon</div><div class="day-run"><span class="dot dot-easy"></span>50min easy + 6 strides (5.5mi) + HAF</div><div class="day-miles">5.5mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 18</div><div class="day-name">Tue</div><div class="day-run"><span class="dot dot-easy"></span>75min easy (~8mi) ★</div><div class="day-miles">8mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 19</div><div class="day-name">Wed</div><div class="day-run"><span class="dot dot-quality"></span>5K Partner Relay — FFRT + HAF</div><div class="day-miles">7mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 20</div><div class="day-name">Thu</div><div class="day-run"><span class="dot dot-rest"></span>REST · Optional Lagree</div><div class="day-miles">—</div></div>
+      <div class="day-row"><div class="day-date">Aug 21</div><div class="day-name">Fri</div><div class="day-run"><span class="dot dot-easy"></span>45min easy (5mi)</div><div class="day-miles">5mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 22</div><div class="day-name">Sat</div><div class="day-run"><span class="dot dot-long"></span>13mi easy</div><div class="day-miles">13mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 23</div><div class="day-name">Sun</div><div class="day-run"><span class="dot dot-rest"></span>REST</div><div class="day-miles">—</div></div>
+    </div>
+
+    <!-- WEEK 13 -->
+    <div class="week-block">
+      <div class="week-header">
+        <span class="week-num">Wk 13</span>
+        <span class="week-title">Aug 24–30</span>
+        <span class="phase-tag phase-peak">Peak ★</span>
+        <span class="week-miles">~54mi</span>
+      </div>
+      <div class="day-row"><div class="day-date">Aug 24</div><div class="day-name">Mon</div><div class="day-run"><span class="dot dot-easy"></span>55min easy + 8 strides (6.5mi) + HAF</div><div class="day-miles">6.5mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 25</div><div class="day-name">Tue</div><div class="day-run"><span class="dot dot-easy"></span>13mi easy ★</div><div class="day-miles">13mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 26</div><div class="day-name">Wed</div><div class="day-run"><span class="dot dot-quality"></span>Modified Tempo — FFRT + HAF</div><div class="day-miles">9mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 27</div><div class="day-name">Thu</div><div class="day-run"><span class="dot dot-rest"></span>REST · Optional Lagree</div><div class="day-miles">—</div></div>
+      <div class="day-row"><div class="day-date">Aug 28</div><div class="day-name">Fri</div><div class="day-run"><span class="dot dot-easy"></span>55min easy (6mi)</div><div class="day-miles">6mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 29</div><div class="day-name">Sat</div><div class="day-run"><span class="dot dot-long"></span>18mi w/ 3x4@MP — Busse Woods</div><div class="day-miles">18mi</div></div>
+      <div class="day-row"><div class="day-date">Aug 30</div><div class="day-name">Sun</div><div class="day-run"><span class="dot dot-rest"></span>REST</div><div class="day-miles">—</div></div>
+    </div>
+
+    <!-- WEEK 14 — THE BIG ONE -->
+    <div class="week-block">
+      <div class="week-header">
+        <span class="week-num">Wk 14</span>
+        <span class="week-title">Aug 31 – Sep 6</span>
+        <span class="phase-tag phase-peak">Peak ★ THE BIG ONE</span>
+        <span class="week-miles">~56mi</span>
+      </div>
+      <div class="day-row"><div class="day-date">Aug 31</div><div class="day-name">Mon</div><div class="day-run"><span class="dot dot-easy"></span>55min easy + HAF (6mi)</div><div class="day-miles">6mi</div></div>
+      <div class="day-row"><div class="day-date">Sep 1</div><div class="day-name">Tue</div><div class="day-run"><span class="dot dot-easy"></span>13mi easy ★</div><div class="day-miles">13mi</div></div>
+      <div class="day-row"><div class="day-date">Sep 2</div><div class="day-name">Wed</div><div class="day-run"><span class="dot dot-quality"></span>Threshold — FFRT + HAF</div><div class="day-miles">9mi</div></div>
+      <div class="day-row"><div class="day-date">Sep 3</div><div class="day-name">Thu</div><div class="day-run"><span class="dot dot-rest"></span>REST · Optional Lagree</div><div class="day-miles">—</div></div>
+      <div class="day-row"><div class="day-date">Sep 4</div><div class="day-name">Fri</div><div class="day-run"><span class="dot dot-easy"></span>55min easy (6mi)</div><div class="day-miles">6mi</div></div>
+      <div class="day-row race-day"><div class="day-date">Sep 5</div><div class="day-name" style="color:var(--accent)">Sat</div><div class="day-run"><span class="dot dot-long"></span><strong>20.5mi w/ 10@GMP — THE BIG ONE</strong></div><div class="day-miles">20.5mi</div></div>
+      <div class="day-row"><div class="day-date">Sep 6</div><div class="day-name">Sun</div><div class="day-run"><span class="dot dot-rest"></span>REST</div><div class="day-miles">—</div></div>
+    </div>
+
+    <!-- WEEK 15 -->
+    <div class="week-block">
+      <div class="week-header">
+        <span class="week-num">Wk 15</span>
+        <span class="week-title">Sep 7–13</span>
+        <span class="phase-tag phase-peak">Peak</span>
+        <span class="week-miles">~40mi</span>
+      </div>
+      <div class="day-row"><div class="day-date">Sep 7</div><div class="day-name">Mon</div><div class="day-run"><span class="dot dot-easy"></span>50min easy + HAF (5mi)</div><div class="day-miles">5mi</div></div>
+      <div class="day-row"><div class="day-date">Sep 8</div><div class="day-name">Tue</div><div class="day-run"><span class="dot dot-easy"></span>75min easy (~8mi) ★</div><div class="day-miles">8mi</div></div>
+      <div class="day-row"><div class="day-date">Sep 9</div><div class="day-name">Wed</div><div class="day-run"><span class="dot dot-quality"></span>In & Out Tempo — FFRT + HAF</div><div class="day-miles">8mi</div></div>
+      <div class="day-row"><div class="day-date">Sep 10</div><div class="day-name">Thu</div><div class="day-run"><span class="dot dot-rest"></span>REST · Optional Lagree</div><div class="day-miles">—</div></div>
+      <div class="day-row"><div class="day-date">Sep 11</div><div class="day-name">Fri</div><div class="day-run"><span class="dot dot-easy"></span>45min easy (5mi)</div><div class="day-miles">5mi</div></div>
+      <div class="day-row race-day"><div class="day-date">Sep 12</div><div class="day-name" style="color:var(--accent4)">Sat</div><div class="day-run"><span class="dot dot-race"></span><strong>Hidden Gem Half Marathon — FULL SEND</strong></div><div class="day-miles">~15mi</div></div>
+      <div class="day-row"><div class="day-date">Sep 13</div><div class="day-name">Sun</div><div class="day-run"><span class="dot dot-rest"></span>REST</div><div class="day-miles">—</div></div>
+    </div>
+
+    <!-- WEEK 16 -->
+    <div class="week-block">
+      <div class="week-header">
+        <span class="week-num">Wk 16</span>
+        <span class="week-title">Sep 14–20</span>
+        <span class="phase-tag phase-peak">Peak ★</span>
+        <span class="week-miles">~54mi</span>
+      </div>
+      <div class="day-row"><div class="day-date">Sep 14</div><div class="day-name">Mon</div><div class="day-run"><span class="dot dot-quality"></span>HMP tempo 3-4mi + HAF</div><div class="day-miles">7mi</div></div>
+      <div class="day-row"><div class="day-date">Sep 15</div><div class="day-name">Tue</div><div class="day-run"><span class="dot dot-easy"></span>12mi easy ★</div><div class="day-miles">12mi</div></div>
+      <div class="day-row"><div class="day-date">Sep 16</div><div class="day-name">Wed</div><div class="day-run"><span class="dot dot-quality"></span>Yasso 800s — FFRT + HAF</div><div class="day-miles">9mi</div></div>
+      <div class="day-row"><div class="day-date">Sep 17</div><div class="day-name">Thu</div><div class="day-run"><span class="dot dot-rest"></span>REST · Optional Lagree</div><div class="day-miles">—</div></div>
+      <div class="day-row"><div class="day-date">Sep 18</div><div class="day-name">Fri</div><div class="day-run"><span class="dot dot-easy"></span>50min easy (5mi)</div><div class="day-miles">5mi</div></div>
+      <div class="day-row"><div class="day-date">Sep 19</div><div class="day-name">Sat</div><div class="day-run"><span class="dot dot-long"></span>20mi (opt last 4@MP) — FF group run · last 20-miler</div><div class="day-miles">20mi</div></div>
+      <div class="day-row"><div class="day-date">Sep 20</div><div class="day-name">Sun</div><div class="day-run"><span class="dot dot-rest"></span>REST</div><div class="day-miles">—</div></div>
+    </div>
+
+    <!-- WEEK 17 -->
+    <div class="week-block">
+      <div class="week-header">
+        <span class="week-num">Wk 17</span>
+        <span class="week-title">Sep 21–27</span>
+        <span class="phase-tag phase-taper">Taper 1 ★</span>
+        <span class="week-miles">~51mi</span>
+      </div>
+      <div class="day-row"><div class="day-date">Sep 21</div><div class="day-name">Mon</div><div class="day-run"><span class="dot dot-easy"></span>55min easy + 8 strides (6.5mi) + HAF</div><div class="day-miles">6.5mi</div></div>
+      <div class="day-row"><div class="day-date">Sep 22</div><div class="day-name">Tue</div><div class="day-run"><span class="dot dot-easy"></span>10mi easy ★</div><div class="day-miles">10mi</div></div>
+      <div class="day-row"><div class="day-date">Sep 23</div><div class="day-name">Wed</div><div class="day-run"><span class="dot dot-quality"></span>2mi reps + 200s — FFRT + HAF</div><div class="day-miles">9mi</div></div>
+      <div class="day-row"><div class="day-date">Sep 24</div><div class="day-name">Thu</div><div class="day-run"><span class="dot dot-rest"></span>REST</div><div class="day-miles">—</div></div>
+      <div class="day-row"><div class="day-date">Sep 25</div><div class="day-name">Fri</div><div class="day-run"><span class="dot dot-easy"></span>50min easy (5mi)</div><div class="day-miles">5mi</div></div>
+      <div class="day-row"><div class="day-date">Sep 26</div><div class="day-name">Sat</div><div class="day-run"><span class="dot dot-long"></span>19mi w/ 8@MP + 2@HMP — Going South</div><div class="day-miles">19mi</div></div>
+      <div class="day-row"><div class="day-date">Sep 27</div><div class="day-name">Sun</div><div class="day-run"><span class="dot dot-rest"></span>REST</div><div class="day-miles">—</div></div>
+    </div>
+
+    <!-- WEEK 18 -->
+    <div class="week-block">
+      <div class="week-header">
+        <span class="week-num">Wk 18</span>
+        <span class="week-title">Sep 28 – Oct 4</span>
+        <span class="phase-tag phase-taper">Taper 2</span>
+        <span class="week-miles">~36mi</span>
+      </div>
+      <div class="day-row"><div class="day-date">Sep 28</div><div class="day-name">Mon</div><div class="day-run"><span class="dot dot-easy"></span>50min easy + light HAF (5mi)</div><div class="day-miles">5mi</div></div>
+      <div class="day-row"><div class="day-date">Sep 29</div><div class="day-name">Tue</div><div class="day-run"><span class="dot dot-easy"></span>55min easy (5.5mi)</div><div class="day-miles">5.5mi</div></div>
+      <div class="day-row"><div class="day-date">Sep 30</div><div class="day-name">Wed</div><div class="day-run"><span class="dot dot-quality"></span>Root Beer Float — FFRT + light HAF</div><div class="day-miles">8mi</div></div>
+      <div class="day-row"><div class="day-date">Oct 1</div><div class="day-name">Thu</div><div class="day-run"><span class="dot dot-rest"></span>REST</div><div class="day-miles">—</div></div>
+      <div class="day-row"><div class="day-date">Oct 2</div><div class="day-name">Fri</div><div class="day-run"><span class="dot dot-easy"></span>45min easy (4.5mi)</div><div class="day-miles">4.5mi</div></div>
+      <div class="day-row"><div class="day-date">Oct 3</div><div class="day-name">Sat</div><div class="day-run"><span class="dot dot-long"></span>11mi easy</div><div class="day-miles">11mi</div></div>
+      <div class="day-row"><div class="day-date">Oct 4</div><div class="day-name">Sun</div><div class="day-run"><span class="dot dot-rest"></span>REST</div><div class="day-miles">—</div></div>
+    </div>
+
+    <!-- WEEK 19 — RACE WEEK -->
+    <div class="week-block">
+      <div class="week-header">
+        <span class="week-num">Wk 19</span>
+        <span class="week-title">Oct 5–11</span>
+        <span class="phase-tag phase-race">Race Week</span>
+        <span class="week-miles">~18mi</span>
+      </div>
+      <div class="day-row"><div class="day-date">Oct 5</div><div class="day-name">Mon</div><div class="day-run"><span class="dot dot-easy"></span>50min easy — course viz w/ FFRT</div><div class="day-miles">5mi</div></div>
+      <div class="day-row"><div class="day-date">Oct 6</div><div class="day-name">Tue</div><div class="day-run"><span class="dot dot-easy"></span>35min easy (3.5mi)</div><div class="day-miles">3.5mi</div></div>
+      <div class="day-row"><div class="day-date">Oct 7</div><div class="day-name">Wed</div><div class="day-run"><span class="dot dot-quality"></span>Pre-race: 3@MP + 4x200@5K (6mi)</div><div class="day-miles">6mi</div></div>
+      <div class="day-row"><div class="day-date">Oct 8</div><div class="day-name">Thu</div><div class="day-run"><span class="dot dot-rest"></span>REST or cross train</div><div class="day-miles">—</div></div>
+      <div class="day-row"><div class="day-date">Oct 9</div><div class="day-name">Fri</div><div class="day-run"><span class="dot dot-rest"></span>REST</div><div class="day-miles">—</div></div>
+      <div class="day-row"><div class="day-date">Oct 10</div><div class="day-name">Sat</div><div class="day-run"><span class="dot dot-easy"></span>20-30min shakeout (2.5mi)</div><div class="day-miles">2.5mi</div></div>
+      <div class="day-row race-day" style="border: 1px solid rgba(240,192,64,.3); background: rgba(240,192,64,.07);">
+        <div class="day-date" style="color:var(--accent4); font-weight:700;">Oct 11</div>
+        <div class="day-name" style="color:var(--accent4); font-weight:700;">Sun</div>
+        <div class="day-run" style="font-size:15px; font-weight:700; color: var(--accent4);">🏆 CHICAGO MARATHON · RELENTLESS · Sub-3:55</div>
+        <div class="day-miles" style="color:var(--accent4); font-weight:700;">26.2mi</div>
+      </div>
+    </div>
+
+  </div><!-- end plan-scroll -->
+</div><!-- end tab-plan -->
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- TAB 4: WEEK IN REVIEW                                 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="page" id="tab-review">
+<!-- WEEK_REVIEW_START -->
+
+  <div style="margin-bottom:28px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+    <h1>Week 1 in Review</h1>
+    <span style="display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(122,122,149,.15);color:var(--muted);">Race</span>
+    <span style="font-size:13px;color:var(--muted);">Jun 01 – Jun 07</span>
+    <span style="margin-left:auto;font-size:12px;color:var(--muted);">125 days to Chicago</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+  <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Miles this week</div>
+  <div style="font-size:26px;font-weight:700;letter-spacing:-.02em;color:var(--accent3);">33.6</div>
+  <div style='font-size:12px;color:var(--muted);margin-top:2px;'>Target: 33mi</div>
+</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+  <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Runs</div>
+  <div style="font-size:26px;font-weight:700;letter-spacing:-.02em;color:var(--accent2);">6</div>
+  <div style='font-size:12px;color:var(--muted);margin-top:2px;'>HAF: 1 sessions</div>
+</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+  <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Key session</div>
+  <div style="font-size:26px;font-weight:700;letter-spacing:-.02em;color:var(--accent3);">✓</div>
+  <div style='font-size:12px;color:var(--muted);margin-top:2px;'>Half Time Fartlek + Chicago 13.1</div>
+</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+  <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Long run</div>
+  <div style="font-size:26px;font-weight:700;letter-spacing:-.02em;color:var(--accent);">13.3mi</div>
+  <div style='font-size:12px;color:var(--muted);margin-top:2px;'>8:27/mi</div>
+</div>
+  </div>
+
+  
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;">
+  <div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Executive Summary</div>
+  <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:10px;">Fitness Check Complete: Sub-3:55 Is Within Range</div>
+  <p style="font-size:13px;color:var(--muted);line-height:1.6;margin:0;">Week 1 delivered exactly what it was designed to do: a fitness snapshot before the build begins.  Tuesday's workout at 9:19/mi avg showed the speed is there. Fastest interval: 7:30/mi. The Chicago 13.1 on Saturday — 1:52:21 at 8:27/mi, HR 165.6 in warm June conditions — translates to a VDOT marathon equivalent of 3:52:35. That's already 2+ minutes faster than your 3:55 goal. The fitness gap isn't speed or aerobic capacity. It's muscular endurance in miles 17–26. Everything in this block is designed to close that gap.</p>
+</div>
+
+  
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-top:16px;">
+  <div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Up Next: Week 2</div>
+  <p style="font-size:13px;color:var(--muted);line-height:1.6;margin:0 0 4px;">Week 2 (25mi · Recovery): <strong>Post-race recovery — easy all week, no FFRT, 10-12mi Sat</strong></p>
+  <div style="background:var(--surface2);border-radius:8px;padding:12px;margin:12px 0;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><tr><td style="padding:6px 10px 6px 0;font-weight:600;color:var(--text);white-space:nowrap;">Mon</td><td style="padding:6px 10px;color:var(--muted);">20–25min easy or rest</td><td style="padding:6px 0;font-size:12px;color:var(--muted);opacity:.7;">No strides. HAF fine if upper body.</td></tr><tr><td style="padding:6px 10px 6px 0;font-weight:600;color:var(--text);white-space:nowrap;">Tue</td><td style="padding:6px 10px;color:var(--muted);">45–50min easy (~5mi)</td><td style="padding:6px 0;font-size:12px;color:var(--muted);opacity:.7;">Still no strides. Just aerobic.</td></tr><tr><td style="padding:6px 10px 6px 0;font-weight:600;color:var(--text);white-space:nowrap;">Wed</td><td style="padding:6px 10px;color:var(--muted);">40–50min easy (~4–5mi)</td><td style="padding:6px 0;font-size:12px;color:var(--muted);opacity:.7;">Instead of FFRT. 10:00–10:30 pace.</td></tr><tr><td style="padding:6px 10px 6px 0;font-weight:600;color:var(--text);white-space:nowrap;">Thu</td><td style="padding:6px 10px;color:var(--muted);">REST / optional Lagree</td><td style="padding:6px 0;font-size:12px;color:var(--muted);opacity:.7;"></td></tr><tr><td style="padding:6px 10px 6px 0;font-weight:600;color:var(--text);white-space:nowrap;">Fri</td><td style="padding:6px 10px;color:var(--muted);">50min easy + HAF</td><td style="padding:6px 0;font-size:12px;color:var(--muted);opacity:.7;">Back to normal.</td></tr><tr><td style="padding:6px 10px 6px 0;font-weight:600;color:var(--text);white-space:nowrap;">Sat</td><td style="padding:6px 10px;color:var(--muted);">10–12mi easy</td><td style="padding:6px 0;font-size:12px;color:var(--muted);opacity:.7;">The priority. Arrive fresh.</td></tr><tr><td style="padding:6px 10px 6px 0;font-weight:600;color:var(--text);white-space:nowrap;">Sun</td><td style="padding:6px 10px;color:var(--muted);">REST</td><td style="padding:6px 0;font-size:12px;color:var(--muted);opacity:.7;"></td></tr></table></div><p style="font-size:13px;color:var(--muted);margin:0;">Easy pace all week: <strong>9:57 – 10:56/mi</strong>. Saturday long run is the priority — arrive fresh.</p>
+</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;">
+    <div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <h3 style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;">This week's runs</h3>
+        <div style="padding:12px 0;border-bottom:1px solid rgba(46,46,61,.5);">
+  <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;">
+    <span style="font-size:11px;color:var(--muted);width:58px;flex-shrink:0;">2026-06-01</span>
+    <span style="flex:1;font-size:13px;">Afternoon Run</span>
+    <span style="font-size:13px;color:var(--muted);">4.9mi</span>
+    <span style="font-size:13px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;">10:16/mi</span>
+    <span style="font-size:12px;color:var(--muted);">HR 126.1</span>
+    <span style="display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(122,122,149,.12);color:var(--muted);">Recovery zone</span>
+  </div>
+  
+</div><div style="padding:12px 0;border-bottom:1px solid rgba(46,46,61,.5);">
+  <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;">
+    <span style="font-size:11px;color:var(--muted);width:58px;flex-shrink:0;">2026-06-02</span>
+    <span style="flex:1;font-size:13px;">50 Easy</span>
+    <span style="font-size:13px;color:var(--muted);">4.6mi</span>
+    <span style="font-size:13px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;">10:50/mi</span>
+    <span style="font-size:12px;color:var(--muted);">HR 129.8</span>
+    <span style="display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(122,122,149,.12);color:var(--muted);">Recovery zone</span>
+  </div>
+  
+</div><div style="padding:12px 0;border-bottom:1px solid rgba(46,46,61,.5);">
+  <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;">
+    <span style="font-size:11px;color:var(--muted);width:58px;flex-shrink:0;">2026-06-03</span>
+    <span style="flex:1;font-size:13px;">Global Running Day ft. FFRT Half Time Fartlek</span>
+    <span style="font-size:13px;color:var(--muted);">7.8mi</span>
+    <span style="font-size:13px;font-weight:600;color:var(--accent3);font-variant-numeric:tabular-nums;">9:19/mi</span>
+    <span style="font-size:12px;color:var(--muted);">HR 150.7</span>
+    <span style="display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(78,203,136,.15);color:var(--accent3);">Easy zone</span>
+  </div>
+  <div style="margin-top:8px;padding:8px 12px;background:var(--surface2);border-radius:6px;"><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 1: <strong style="color:var(--text)">1.80mi @ 10:16</strong> · HR 128 Lap 1</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 2: <strong style="color:var(--text)">1.18mi @ 8:29</strong> · HR 154 Lap 2</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 3: <strong style="color:var(--text)">0.49mi @ 10:06</strong> · HR 148 Lap 3</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 4: <strong style="color:var(--text)">0.96mi @ 8:19</strong> · HR 161 Lap 4</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 5: <strong style="color:var(--text)">0.39mi @ 10:11</strong> · HR 153 Lap 5</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 6: <strong style="color:var(--text)">0.73mi @ 8:11</strong> · HR 165 Lap 6</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 7: <strong style="color:var(--text)">0.30mi @ 9:54</strong> · HR 160 Lap 7</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 8: <strong style="color:var(--text)">0.50mi @ 8:01</strong> · HR 169 Lap 8</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 9: <strong style="color:var(--text)">0.19mi @ 10:34</strong> · HR 165 Lap 9</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 10: <strong style="color:var(--text)">0.27mi @ 7:30</strong> · HR 172 Lap 10</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 11: <strong style="color:var(--text)">1.04mi @ 10:15</strong> · HR 155 Lap 11</div></div>
+</div><div style="padding:12px 0;border-bottom:1px solid rgba(46,46,61,.5);">
+  <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;">
+    <span style="font-size:11px;color:var(--muted);width:58px;flex-shrink:0;">2026-06-05</span>
+    <span style="flex:1;font-size:13px;">Hot and Wet 13.1 Shakeout + Strides</span>
+    <span style="font-size:13px;color:var(--muted);">2.4mi</span>
+    <span style="font-size:13px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;">10:58/mi</span>
+    <span style="font-size:12px;color:var(--muted);">HR 129.9</span>
+    <span style="display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(122,122,149,.12);color:var(--muted);">Recovery zone</span>
+  </div>
+  
+</div><div style="padding:12px 0;border-bottom:1px solid rgba(46,46,61,.5);">
+  <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;">
+    <span style="font-size:11px;color:var(--muted);width:58px;flex-shrink:0;">2026-06-07</span>
+    <span style="flex:1;font-size:13px;">Morning Run</span>
+    <span style="font-size:13px;color:var(--muted);">0.6mi</span>
+    <span style="font-size:13px;font-weight:600;color:var(--accent3);font-variant-numeric:tabular-nums;">10:09/mi</span>
+    <span style="font-size:12px;color:var(--muted);">HR 124.1</span>
+    <span style="display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(78,203,136,.15);color:var(--accent3);">Easy zone</span>
+  </div>
+  
+</div><div style="padding:12px 0;border-bottom:1px solid rgba(46,46,61,.5);">
+  <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;">
+    <span style="font-size:11px;color:var(--muted);width:58px;flex-shrink:0;">2026-06-07</span>
+    <span style="flex:1;font-size:13px;">Chicago 13.1 - 1:52:21</span>
+    <span style="font-size:13px;color:var(--muted);">13.3mi</span>
+    <span style="font-size:13px;font-weight:600;color:var(--accent4);font-variant-numeric:tabular-nums;">8:27/mi</span>
+    <span style="font-size:12px;color:var(--muted);">HR 165.6</span>
+    <span style="display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(240,192,64,.15);color:var(--accent4);">MP zone</span>
+  </div>
+  <div style="margin-top:8px;padding:8px 12px;background:var(--surface2);border-radius:6px;"><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 1: <strong style="color:var(--text)">1.01mi @ 8:48</strong> · HR 149 Lap 1</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 2: <strong style="color:var(--text)">1.01mi @ 8:39</strong> · HR 156 Lap 2</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 3: <strong style="color:var(--text)">1.01mi @ 8:41</strong> · HR 157 Lap 3</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 4: <strong style="color:var(--text)">1.00mi @ 8:39</strong> · HR 162 Lap 4</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 5: <strong style="color:var(--text)">1.00mi @ 8:29</strong> · HR 163 Lap 5</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 6: <strong style="color:var(--text)">2.03mi @ 8:27</strong> · HR 165 Lap 6</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 7: <strong style="color:var(--text)">1.01mi @ 8:24</strong> · HR 167 Lap 7</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 8: <strong style="color:var(--text)">1.01mi @ 8:18</strong> · HR 168 Lap 8</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 9: <strong style="color:var(--text)">1.02mi @ 8:21</strong> · HR 170 Lap 9</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 10: <strong style="color:var(--text)">1.01mi @ 8:26</strong> · HR 173 Lap 10</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 11: <strong style="color:var(--text)">1.01mi @ 8:17</strong> · HR 178 Lap 11</div><div style="padding:3px 0;font-size:12px;color:var(--muted);">Lap 12: <strong style="color:var(--text)">1.04mi @ 8:02</strong> · HR 180 Lap 12</div></div>
+</div>
+      </div>
+    </div>
+    <div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;"><div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;">Race Breakdown</div><div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;">Chicago 13.1 - 1:52:21</div><div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;"><div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Time</div><div style="font-size:22px;font-weight:700;color:var(--text);">1:52:21</div></div><div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Avg Pace</div><div style="font-size:22px;font-weight:700;color:var(--accent2);">8:27/mi</div></div><div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Avg HR</div><div style="font-size:22px;font-weight:700;color:var(--text);">165.6</div></div><div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Distance</div><div style="font-size:22px;font-weight:700;color:var(--text);">13.29mi</div></div></div><div style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6;">Slight negative split (8:37 → 8:18/mi). Solid controlled effort.</div><div style="margin-top:10px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px;"><span style="width:18px;color:var(--muted);text-align:right;flex-shrink:0;">1</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:12%;height:100%;background:var(--accent4);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent4);font-variant-numeric:tabular-nums;">8:48</span><span style="width:48px;font-size:11px;color:var(--muted);">HR 149</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px;"><span style="width:18px;color:var(--muted);text-align:right;flex-shrink:0;">2</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:29%;height:100%;background:var(--accent4);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent4);font-variant-numeric:tabular-nums;">8:39</span><span style="width:48px;font-size:11px;color:var(--muted);">HR 156</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px;"><span style="width:18px;color:var(--muted);text-align:right;flex-shrink:0;">3</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:25%;height:100%;background:var(--accent4);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent4);font-variant-numeric:tabular-nums;">8:41</span><span style="width:48px;font-size:11px;color:var(--muted);">HR 157</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px;"><span style="width:18px;color:var(--muted);text-align:right;flex-shrink:0;">4</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:29%;height:100%;background:var(--accent4);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent4);font-variant-numeric:tabular-nums;">8:39</span><span style="width:48px;font-size:11px;color:var(--muted);">HR 162</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px;"><span style="width:18px;color:var(--muted);text-align:right;flex-shrink:0;">5</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:48%;height:100%;background:var(--accent4);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent4);font-variant-numeric:tabular-nums;">8:29</span><span style="width:48px;font-size:11px;color:var(--muted);">HR 163</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px;"><span style="width:18px;color:var(--muted);text-align:right;flex-shrink:0;">6</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:52%;height:100%;background:var(--accent4);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent4);font-variant-numeric:tabular-nums;">8:27</span><span style="width:48px;font-size:11px;color:var(--muted);">HR 165</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px;"><span style="width:18px;color:var(--muted);text-align:right;flex-shrink:0;">7</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:58%;height:100%;background:var(--accent2);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent2);font-variant-numeric:tabular-nums;">8:24</span><span style="width:48px;font-size:11px;color:var(--muted);">HR 167</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px;"><span style="width:18px;color:var(--muted);text-align:right;flex-shrink:0;">8</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:69%;height:100%;background:var(--accent2);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent2);font-variant-numeric:tabular-nums;">8:18</span><span style="width:48px;font-size:11px;color:var(--muted);">HR 168</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px;"><span style="width:18px;color:var(--muted);text-align:right;flex-shrink:0;">9</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:64%;height:100%;background:var(--accent2);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent2);font-variant-numeric:tabular-nums;">8:21</span><span style="width:48px;font-size:11px;color:var(--muted);">HR 170</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px;"><span style="width:18px;color:var(--muted);text-align:right;flex-shrink:0;">10</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:54%;height:100%;background:var(--accent4);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent4);font-variant-numeric:tabular-nums;">8:26</span><span style="width:48px;font-size:11px;color:var(--muted);">HR 173</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px;"><span style="width:18px;color:var(--muted);text-align:right;flex-shrink:0;">11</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:71%;height:100%;background:var(--accent2);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent2);font-variant-numeric:tabular-nums;">8:17</span><span style="width:48px;font-size:11px;color:var(--muted);">HR 178</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px;"><span style="width:18px;color:var(--muted);text-align:right;flex-shrink:0;">12</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:100%;height:100%;background:var(--accent2);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent2);font-variant-numeric:tabular-nums;">8:02</span><span style="width:48px;font-size:11px;color:var(--muted);">HR 180</span></div></div><div style="margin-top:12px;padding:12px;background:var(--surface2);border-radius:8px;"><div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Marathon Prediction (Riegel Formula)</div><div style="font-size:13px;color:var(--muted);line-height:1.6;">Predicts <strong style="color:var(--accent3);">3:54:14</strong> (8:56/mi) — right at your sub-3:55 target. With 18 weeks of structured training ahead, you're in great position.</div><div style="font-size:11px;color:var(--muted);margin-top:5px;opacity:.6;">Directional signal — heat, course, and race-day execution all affect the real number.</div></div></div><div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;"><div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--accent2);margin-bottom:6px;">Workout Breakdown</div><div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;">Global Running Day ft. FFRT Half Time Fartlek</div><div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;"><div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Distance</div><div style="font-size:22px;font-weight:700;color:var(--text);">7.8mi</div></div><div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Avg HR</div><div style="font-size:22px;font-weight:700;color:var(--text);">150.7</div></div></div><div style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6;">5 hard efforts — avg 8:06/mi, fastest 7:30/mi.</div><div style="margin-top:10px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px;"><span style="width:46px;color:var(--muted);font-size:10px;font-weight:600;text-align:right;flex-shrink:0;">WU</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:21%;height:100%;background:var(--muted);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;">10:16</span><span style="width:36px;font-size:11px;color:var(--muted);">1.80mi</span><span style="width:46px;font-size:11px;color:var(--muted);">HR 128</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px;"><span style="width:46px;color:var(--accent2);font-size:10px;font-weight:600;text-align:right;flex-shrink:0;">Hard 1</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:72%;height:100%;background:var(--accent2);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent2);font-variant-numeric:tabular-nums;">8:29</span><span style="width:36px;font-size:11px;color:var(--muted);">1.18mi</span><span style="width:46px;font-size:11px;color:var(--muted);">HR 154</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px;"><span style="width:46px;color:var(--accent3);font-size:10px;font-weight:600;text-align:right;flex-shrink:0;">Easy</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:25%;height:100%;background:var(--accent3);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent3);font-variant-numeric:tabular-nums;">10:06</span><span style="width:36px;font-size:11px;color:var(--muted);">0.49mi</span><span style="width:46px;font-size:11px;color:var(--muted);">HR 148</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px;"><span style="width:46px;color:var(--accent2);font-size:10px;font-weight:600;text-align:right;flex-shrink:0;">Hard 2</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:77%;height:100%;background:var(--accent2);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent2);font-variant-numeric:tabular-nums;">8:19</span><span style="width:36px;font-size:11px;color:var(--muted);">0.96mi</span><span style="width:46px;font-size:11px;color:var(--muted);">HR 161</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px;"><span style="width:46px;color:var(--accent3);font-size:10px;font-weight:600;text-align:right;flex-shrink:0;">Easy</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:23%;height:100%;background:var(--accent3);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent3);font-variant-numeric:tabular-nums;">10:11</span><span style="width:36px;font-size:11px;color:var(--muted);">0.39mi</span><span style="width:46px;font-size:11px;color:var(--muted);">HR 153</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px;"><span style="width:46px;color:var(--accent2);font-size:10px;font-weight:600;text-align:right;flex-shrink:0;">Hard 3</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:80%;height:100%;background:var(--accent2);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent2);font-variant-numeric:tabular-nums;">8:11</span><span style="width:36px;font-size:11px;color:var(--muted);">0.73mi</span><span style="width:46px;font-size:11px;color:var(--muted);">HR 165</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px;"><span style="width:46px;color:var(--accent3);font-size:10px;font-weight:600;text-align:right;flex-shrink:0;">Easy</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:31%;height:100%;background:var(--accent3);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent3);font-variant-numeric:tabular-nums;">9:54</span><span style="width:36px;font-size:11px;color:var(--muted);">0.30mi</span><span style="width:46px;font-size:11px;color:var(--muted);">HR 160</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px;"><span style="width:46px;color:var(--accent2);font-size:10px;font-weight:600;text-align:right;flex-shrink:0;">Hard 4</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:85%;height:100%;background:var(--accent2);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent2);font-variant-numeric:tabular-nums;">8:01</span><span style="width:36px;font-size:11px;color:var(--muted);">0.50mi</span><span style="width:46px;font-size:11px;color:var(--muted);">HR 169</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px;"><span style="width:46px;color:var(--accent3);font-size:10px;font-weight:600;text-align:right;flex-shrink:0;">Easy</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:12%;height:100%;background:var(--accent3);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent3);font-variant-numeric:tabular-nums;">10:34</span><span style="width:36px;font-size:11px;color:var(--muted);">0.19mi</span><span style="width:46px;font-size:11px;color:var(--muted);">HR 165</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px;"><span style="width:46px;color:var(--accent2);font-size:10px;font-weight:600;text-align:right;flex-shrink:0;">Hard 5</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:100%;height:100%;background:var(--accent2);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--accent2);font-variant-numeric:tabular-nums;">7:30</span><span style="width:36px;font-size:11px;color:var(--muted);">0.27mi</span><span style="width:46px;font-size:11px;color:var(--muted);">HR 172</span></div><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px;"><span style="width:46px;color:var(--muted);font-size:10px;font-weight:600;text-align:right;flex-shrink:0;">CD</span><div style="flex:1;background:var(--surface2);border-radius:3px;height:7px;"><div style="width:21%;height:100%;background:var(--muted);border-radius:3px;opacity:.85;"></div></div><span style="width:40px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;">10:15</span><span style="width:36px;font-size:11px;color:var(--muted);">1.04mi</span><span style="width:46px;font-size:11px;color:var(--muted);">HR 155</span></div></div></div>
+      <div style="margin-bottom:16px;"><div style="background:rgba(78,203,136,.15);border:1px solid var(--accent3)20;border:1px solid var(--accent3);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
+  <div style="font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--accent3);margin-bottom:6px;">Weekly target hit</div>
+  <div style="font-size:13px;color:var(--muted);line-height:1.7;">33.6mi vs 33mi planned. On track.</div>
+</div><div style="background:rgba(91,142,240,.15);border:1px solid var(--accent2)20;border:1px solid var(--accent2);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
+  <div style="font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--accent2);margin-bottom:6px;">Quality session logged</div>
+  <div style="font-size:13px;color:var(--muted);line-height:1.7;">FFRT workout done. Fastest lap: 7:30/mi. Overall avg 9:19/mi at HR 150.7.</div>
+</div><div style="background:rgba(224,92,46,.15);border:1px solid var(--accent)20;border:1px solid var(--accent);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
+  <div style="font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;">Long run complete</div>
+  <div style="font-size:13px;color:var(--muted);line-height:1.7;">13.3mi at 8:27/mi, HR 165.6. HR was elevated — check conditions and fueling.</div>
+</div><div style="background:rgba(122,122,149,.12);border:1px solid var(--muted)20;border:1px solid var(--muted);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
+  <div style="font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Heavy AF: 1 session</div>
+  <div style="font-size:13px;color:var(--muted);line-height:1.7;">Strength work logged alongside running. Keep monitoring fatigue going into hard sessions.</div>
+</div></div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Sunday, June 07 at 11:55 PM</div>
+
+<!-- WEEK_REVIEW_END -->
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- TAB 5: BLOCK SO FAR                                   -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="page" id="tab-block">
+<!-- BLOCK_SUMMARY_START -->
+
+  <div style="margin-bottom:28px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+    <h1>The Block So Far</h1>
+    <span style="font-size:13px;color:var(--muted);">Week 1 of 19 · 125 days to Chicago</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+  <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Total miles</div>
+  <div style="font-size:26px;font-weight:700;letter-spacing:-.02em;color:var(--accent);">34</div>
+  <div style='font-size:12px;color:var(--muted);margin-top:2px;'>Week 1 of 19</div>
+</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+  <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Total runs</div>
+  <div style="font-size:26px;font-weight:700;letter-spacing:-.02em;color:var(--accent2);">6</div>
+  <div style='font-size:12px;color:var(--muted);margin-top:2px;'>Since Jun 1</div>
+</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+  <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Quality sessions</div>
+  <div style="font-size:26px;font-weight:700;letter-spacing:-.02em;color:var(--accent3);">1/1</div>
+  <div style='font-size:12px;color:var(--muted);margin-top:2px;'>Weeks with FFRT workout</div>
+</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+  <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">HAF sessions</div>
+  <div style="font-size:26px;font-weight:700;letter-spacing:-.02em;color:var(--muted);">1</div>
+  <div style='font-size:12px;color:var(--muted);margin-top:2px;'>Since block start</div>
+</div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
+      <h3 style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;">Weekly Mileage · Bar = actual, line = target</h3>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:12px;">
+  <span style="width:36px;color:var(--muted);text-align:right;">Wk 1</span>
+  <div style="flex:1;position:relative;background:var(--surface2);border-radius:3px;height:10px;">
+    <div style="width:84.0%;height:100%;background:var(--accent3);border-radius:3px;"></div>
+    <div style="position:absolute;top:0;left:82.5%;width:2px;height:100%;background:rgba(255,255,255,.2);"></div>
+  </div>
+  <span style="width:36px;font-weight:600;color:var(--text);">34mi</span>
+  <span style="width:60px;font-size:11px;color:var(--muted);">Race</span>
+</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:8px;">
+        <span style="display:inline-block;width:10px;height:10px;background:var(--accent3);border-radius:2px;margin-right:4px;"></span>On/above target
+        <span style="display:inline-block;width:10px;height:10px;background:var(--accent4);border-radius:2px;margin:0 4px 0 12px;"></span>Slightly under
+        <span style="display:inline-block;width:10px;height:10px;background:var(--accent);border-radius:2px;margin:0 4px 0 12px;"></span>Short week
+      </div>
+    </div>
+    <div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;">
+        <h3 style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;">What's going well</h3>
+        <div style="display:flex;gap:8px;margin-bottom:8px;font-size:13px;color:var(--muted);"><span style="color:var(--accent3);">✓</span>Quality sessions: 1/1 weeks hit — consistent FFRT attendance</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <h3 style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent4);margin-bottom:14px;">Pay attention to</h3>
+        <div style="display:flex;gap:8px;margin-bottom:8px;font-size:13px;color:var(--muted);"><span style="color:var(--accent4);">→</span>Nothing critical to flag yet.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:24px;">
+    <div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">Weekly Recaps</div>
+    
+<div style="margin-bottom:12px;">
+  <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;">
+    <span style="font-size:13px;font-weight:700;color:var(--text);">Week 1</span>
+    <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(122,122,149,.15);color:var(--muted);">Race</span>
+    <span style="font-size:12px;color:var(--muted);">Jun 01 – Jun 07</span>
+    <span style="margin-left:auto;font-size:12px;font-weight:600;color:var(--accent3);">34 / 33mi</span>
+  </div>
+  
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;">
+  <div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Executive Summary</div>
+  <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:10px;">Fitness Check Complete: Sub-3:55 Is Within Range</div>
+  <p style="font-size:13px;color:var(--muted);line-height:1.6;margin:0;">Week 1 delivered exactly what it was designed to do: a fitness snapshot before the build begins.  Tuesday's workout at 9:19/mi avg showed the speed is there. Fastest interval: 7:30/mi. The Chicago 13.1 on Saturday — 1:52:21 at 8:27/mi, HR 165.6 in warm June conditions — translates to a VDOT marathon equivalent of 3:52:35. That's already 2+ minutes faster than your 3:55 goal. The fitness gap isn't speed or aerobic capacity. It's muscular endurance in miles 17–26. Everything in this block is designed to close that gap.</p>
+</div>
+</div>
+  </div>
+
+  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Sunday, June 07 at 11:55 PM</div>
+
+<!-- BLOCK_SUMMARY_END -->
+</div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Auto-grey any plan day whose date has passed
+(function() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  document.querySelectorAll('.day-row').forEach(row => {
+    const dateEl = row.querySelector('.day-date');
+    if (!dateEl) return;
+    const d = new Date(dateEl.textContent.trim() + ' 2026');
+    if (!isNaN(d) && d < today) row.classList.add('done');
+  });
+})();
+</script>
+
+</body>
+</html>
