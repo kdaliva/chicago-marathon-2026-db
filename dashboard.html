@@ -118,6 +118,9 @@
   .week-chevron { font-size: 11px; color: var(--muted); transition: transform .2s; display: inline-block; }
   .week-block.collapsed .week-chevron { transform: rotate(-90deg); }
   .week-block.collapsed .week-body { display: none; }
+  .week-progress-wrap { height: 3px; background: var(--surface2); border-radius: 2px; margin: -6px 0 10px; overflow: hidden; }
+  .week-progress-bar { height: 100%; background: var(--accent3); border-radius: 2px; transition: width .3s; }
+  .week-progress-bar.over { background: var(--accent4); }
   .plan-controls { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 14px; }
   .plan-ctrl-btn { background: none; border: 1px solid var(--border); color: var(--muted); font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 5px; cursor: pointer; letter-spacing: .04em; }
   .plan-ctrl-btn:hover { color: var(--text); border-color: var(--text); }
@@ -204,9 +207,9 @@
 
 <nav>
   <div class="nav-brand">Kevin D-P</div>
-  <div class="tab active" onclick="showTab('history')">Training History</div>
+  <div class="tab" onclick="showTab('history')">Training History</div>
   <div class="tab" onclick="showTab('current')">Where I'm At</div>
-  <div class="tab" onclick="showTab('plan')">Chicago Plan</div>
+  <div class="tab active" onclick="showTab('plan')">Chicago Plan</div>
   <div class="tab" onclick="showTab('review')">Week in Review</div>
   <div class="tab" onclick="showTab('block')">Block So Far</div>
   <div class="nav-word">RELENTLESS</div>
@@ -215,7 +218,7 @@
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- TAB 1: TRAINING HISTORY                                -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<div class="page active" id="tab-history">
+<div class="page" id="tab-history">
 
   <div style="margin-bottom: 28px;">
     <h1>Training History</h1>
@@ -410,7 +413,7 @@
 
   <div style="margin-bottom: 28px;">
     <h1>Where I'm At</h1>
-    <p>Week 2 of 19 · 38 block miles logged · 122 days to Chicago.</p>
+    <p>Week 2 of 19 · 38 block miles logged · 123 days to Chicago.</p>
   </div>
 
   <div class="grid-4" style="margin-bottom: 20px;">
@@ -426,7 +429,7 @@
     </div>
     <div class="card-sm">
       <div class="stat-label">Last 4 Weeks Avg</div>
-      <div class="stat-value green">28mi</div>
+      <div class="stat-value green">29mi</div>
       <div class="stat-sub">Wk 2 of 19</div>
     </div>
     <div class="card-sm">
@@ -502,7 +505,7 @@
     </div>
   </div>
 
-  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Wednesday, June 10 at 1:29 AM</div>
+  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Tuesday, June 09 at 8:36 PM</div>
 
 <!-- WHERE_AT_END -->
 </div>
@@ -510,7 +513,7 @@
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- TAB 3: CHICAGO PLAN                                   -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<div class="page" id="tab-plan">
+<div class="page active" id="tab-plan">
 
   <div style="margin-bottom: 20px; display:flex; align-items:baseline; gap:16px; flex-wrap:wrap;">
     <h1>Chicago 2026 Plan</h1>
@@ -522,10 +525,10 @@
 <div class="card" style="margin-bottom: 20px;">
     <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
       <span style="font-size:12px; font-weight:600;">Block Progress</span>
-      <span style="font-size:12px; color:var(--muted);">Week 2 of 19 · 122 days to go</span>
+      <span style="font-size:12px; color:var(--muted);">Week 2 of 19 · 123 days to go</span>
     </div>
     <div class="progress-wrap">
-      <div class="progress-bar" style="width:6.8%;"></div>
+      <div class="progress-bar" style="width:6.1%;"></div>
     </div>
     <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:11px; color:var(--muted);">
       <span>Jun 1</span>
@@ -618,7 +621,7 @@
         <span class="week-miles">~25mi</span>
       </div>
       <div class="day-row done"><div class="day-date">Jun 8</div><div class="day-name">Mon</div><div class="day-run"><span class="check"><svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="dot dot-easy"></span>20–25min easy or rest <span style="font-size:11px;color:var(--muted);opacity:.7;">· No strides. HAF fine if upper body.</span></div><div class="day-miles"></div></div>
-      <div class="day-row done"><div class="day-date">Jun 9</div><div class="day-name">Tue</div><div class="day-run"><span class="check"><svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="dot dot-easy"></span>45–50min easy (~5mi) <span style="font-size:11px;color:var(--muted);opacity:.7;">· Still no strides. Just aerobic.</span></div><div class="day-miles">4.8mi ✓</div></div>
+      <div class="day-row"><div class="day-date">Jun 9</div><div class="day-name">Tue</div><div class="day-run"><span class="dot dot-easy"></span>45–50min easy (~5mi) <span style="font-size:11px;color:var(--muted);opacity:.7;">· Still no strides. Just aerobic.</span></div><div class="day-miles">4.8mi ✓</div></div>
       <div class="day-row"><div class="day-date">Jun 10</div><div class="day-name">Wed</div><div class="day-run"><span class="dot dot-easy"></span>40–50min easy (~4–5mi) <span style="font-size:11px;color:var(--muted);opacity:.7;">· Instead of FFRT. 10:00–10:30 pace.</span></div><div class="day-miles"></div></div>
       <div class="day-row"><div class="day-date">Jun 11</div><div class="day-name">Thu</div><div class="day-run"><span class="dot dot-rest"></span>REST / optional Lagree</div><div class="day-miles">—</div></div>
       <div class="day-row"><div class="day-date">Jun 12</div><div class="day-name">Fri</div><div class="day-run"><span class="dot dot-easy"></span>50min easy + HAF <span style="font-size:11px;color:var(--muted);opacity:.7;">· Back to normal.</span></div><div class="day-miles"></div></div>
@@ -934,7 +937,7 @@
     <h1>Week 2 in Review</h1>
     <span style="display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(122,122,149,.15);color:var(--muted);">Recovery</span>
     <span style="font-size:13px;color:var(--muted);">Jun 08 – Jun 14</span>
-    <span style="margin-left:auto;font-size:12px;color:var(--muted);">122 days to Chicago</span>
+    <span style="margin-left:auto;font-size:12px;color:var(--muted);">123 days to Chicago</span>
   </div>
 
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
@@ -994,13 +997,13 @@
     <div>
       
       <div style="margin-bottom:16px;"><div style="background:rgba(122,122,149,.12);border:1px solid var(--muted)20;border:1px solid var(--muted);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
-  <div style="font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">4 days left this week</div>
+  <div style="font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">5 days left this week</div>
   <div style="font-size:13px;color:var(--muted);line-height:1.7;">4.8mi logged so far, 20.2mi remaining to hit 25mi target.</div>
 </div></div>
     </div>
   </div>
 
-  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Wednesday, June 10 at 1:29 AM</div>
+  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Tuesday, June 09 at 8:36 PM</div>
 
 <!-- WEEK_REVIEW_END -->
 </div>
@@ -1013,7 +1016,7 @@
 
   <div style="margin-bottom:28px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
     <h1>The Block So Far</h1>
-    <span style="font-size:13px;color:var(--muted);">Week 2 of 19 · 122 days to Chicago</span>
+    <span style="font-size:13px;color:var(--muted);">Week 2 of 19 · 123 days to Chicago</span>
   </div>
 
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
@@ -1110,7 +1113,7 @@
 </div>
   </div>
 
-  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Wednesday, June 10 at 1:29 AM</div>
+  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Tuesday, June 09 at 8:36 PM</div>
 
 <!-- BLOCK_SUMMARY_END -->
 </div>
@@ -1163,26 +1166,39 @@ function showTab(id) {
       if (m) actual += parseFloat(m[0]);
     });
 
-    // Inject actual / target into header
+    // Inject actual / target into header — spacer must come first to push right
     const weekMilesEl = header.querySelector('.week-miles');
-    if (weekMilesEl && actual > 0) {
-      const actualSpan = document.createElement('span');
-      actualSpan.className = 'week-actual';
-      actualSpan.textContent = actual.toFixed(1) + 'mi';
-      const sep = document.createElement('span');
-      sep.className = 'week-miles-sep';
-      sep.textContent = '/';
-      const spacer = header.querySelector('.week-spacer');
-      const insertBefore = spacer || weekMilesEl;
-      header.insertBefore(sep, insertBefore);
-      header.insertBefore(actualSpan, sep);
-    }
+    if (weekMilesEl) {
+      // Add spacer before the miles group
+      if (!header.querySelector('.week-spacer')) {
+        const spacer = document.createElement('span');
+        spacer.className = 'week-spacer';
+        header.insertBefore(spacer, weekMilesEl);
+      }
+      // Inject actual miles + separator immediately before ~target
+      if (actual > 0) {
+        const sep = document.createElement('span');
+        sep.className = 'week-miles-sep';
+        sep.textContent = '/';
+        const actualSpan = document.createElement('span');
+        actualSpan.className = 'week-actual';
+        actualSpan.textContent = actual.toFixed(1) + 'mi';
+        header.insertBefore(sep, weekMilesEl);
+        header.insertBefore(actualSpan, sep);
+      }
 
-    // Add spacer before miles if not already there
-    if (!header.querySelector('.week-spacer')) {
-      const spacer = document.createElement('span');
-      spacer.className = 'week-spacer';
-      header.insertBefore(spacer, header.querySelector('.week-miles'));
+      // Progress bar (actual vs target), sits between header and week-body
+      const targetMi = parseFloat((weekMilesEl.textContent || '').replace(/[^0-9.]/g, '')) || 0;
+      if (targetMi > 0 && actual > 0) {
+        const pct = Math.min(100, (actual / targetMi) * 100);
+        const pb = document.createElement('div');
+        pb.className = 'week-progress-wrap';
+        const fill = document.createElement('div');
+        fill.className = 'week-progress-bar' + (pct >= 100 ? ' over' : '');
+        fill.style.width = pct.toFixed(1) + '%';
+        pb.appendChild(fill);
+        block.insertBefore(pb, body);
+      }
     }
 
     // Add chevron
