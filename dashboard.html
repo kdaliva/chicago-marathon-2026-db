@@ -107,10 +107,20 @@
 
   /* PLAN TABLE */
   .week-block { margin-bottom: 24px; }
-  .week-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .week-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; }
+  .week-header:hover { opacity: .85; }
   .week-num { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
   .week-title { font-size: 14px; font-weight: 600; }
-  .week-miles { margin-left: auto; font-size: 12px; color: var(--muted); }
+  .week-miles { font-size: 12px; color: var(--muted); }
+  .week-actual { font-size: 12px; font-weight: 700; color: var(--text); }
+  .week-miles-sep { font-size: 12px; color: var(--muted); margin: 0 2px; }
+  .week-spacer { flex: 1; }
+  .week-chevron { font-size: 11px; color: var(--muted); transition: transform .2s; display: inline-block; }
+  .week-block.collapsed .week-chevron { transform: rotate(-90deg); }
+  .week-block.collapsed .week-body { display: none; }
+  .plan-controls { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 14px; }
+  .plan-ctrl-btn { background: none; border: 1px solid var(--border); color: var(--muted); font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 5px; cursor: pointer; letter-spacing: .04em; }
+  .plan-ctrl-btn:hover { color: var(--text); border-color: var(--text); }
 
   .day-row { display: grid; grid-template-columns: 56px 56px 1fr auto; gap: 8px; align-items: start; padding: 7px 0; border-bottom: 1px solid rgba(46,46,61,.5); }
   .day-row:last-child { border-bottom: none; }
@@ -492,7 +502,7 @@
     </div>
   </div>
 
-  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Wednesday, June 10 at 1:22 AM</div>
+  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Wednesday, June 10 at 1:29 AM</div>
 
 <!-- WHERE_AT_END -->
 </div>
@@ -523,6 +533,12 @@
     </div>
   </div>
 <!-- PLAN_PROGRESS_END -->
+
+  <!-- Expand/collapse controls -->
+  <div class="plan-controls">
+    <button class="plan-ctrl-btn" onclick="planExpandAll()">Expand all</button>
+    <button class="plan-ctrl-btn" onclick="planCollapseAll()">Collapse all</button>
+  </div>
 
   <!-- Legend -->
   <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:20px; font-size:12px;">
@@ -984,7 +1000,7 @@
     </div>
   </div>
 
-  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Wednesday, June 10 at 1:22 AM</div>
+  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Wednesday, June 10 at 1:29 AM</div>
 
 <!-- WEEK_REVIEW_END -->
 </div>
@@ -1094,7 +1110,7 @@
 </div>
   </div>
 
-  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Wednesday, June 10 at 1:22 AM</div>
+  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Wednesday, June 10 at 1:29 AM</div>
 
 <!-- BLOCK_SUMMARY_END -->
 </div>
@@ -1117,6 +1133,73 @@ function showTab(id) {
     const d = new Date(dateEl.textContent.trim() + ' 2026');
     if (!isNaN(d) && d < today) row.classList.add('done');
   });
+})();
+
+// Week expand/collapse
+(function() {
+  const blockStart = new Date('2026-06-01T00:00:00');
+  const curWeek = Math.min(19, Math.max(1, Math.floor((Date.now() - blockStart) / (7*24*3600*1000)) + 1));
+
+  document.querySelectorAll('#tab-plan .week-block').forEach(block => {
+    const header = block.querySelector('.week-header');
+    if (!header) return;
+
+    // Parse week number from "Wk N" span
+    const wkEl = header.querySelector('.week-num');
+    const wkNum = wkEl ? parseInt(wkEl.textContent.replace(/\D/g, '')) : 99;
+
+    // Wrap all non-header children in .week-body
+    const body = document.createElement('div');
+    body.className = 'week-body';
+    Array.from(block.children).forEach(child => {
+      if (child !== header) body.appendChild(child);
+    });
+    block.appendChild(body);
+
+    // Compute actual miles from .day-miles cells
+    let actual = 0;
+    body.querySelectorAll('.day-miles').forEach(el => {
+      const m = el.textContent.match(/[\d.]+/);
+      if (m) actual += parseFloat(m[0]);
+    });
+
+    // Inject actual / target into header
+    const weekMilesEl = header.querySelector('.week-miles');
+    if (weekMilesEl && actual > 0) {
+      const actualSpan = document.createElement('span');
+      actualSpan.className = 'week-actual';
+      actualSpan.textContent = actual.toFixed(1) + 'mi';
+      const sep = document.createElement('span');
+      sep.className = 'week-miles-sep';
+      sep.textContent = '/';
+      const spacer = header.querySelector('.week-spacer');
+      const insertBefore = spacer || weekMilesEl;
+      header.insertBefore(sep, insertBefore);
+      header.insertBefore(actualSpan, sep);
+    }
+
+    // Add spacer before miles if not already there
+    if (!header.querySelector('.week-spacer')) {
+      const spacer = document.createElement('span');
+      spacer.className = 'week-spacer';
+      header.insertBefore(spacer, header.querySelector('.week-miles'));
+    }
+
+    // Add chevron
+    const chevron = document.createElement('span');
+    chevron.className = 'week-chevron';
+    chevron.textContent = '▾';
+    header.appendChild(chevron);
+
+    // Toggle on click
+    header.addEventListener('click', () => block.classList.toggle('collapsed'));
+
+    // Default: collapse past weeks
+    if (wkNum < curWeek) block.classList.add('collapsed');
+  });
+
+  window.planExpandAll  = () => document.querySelectorAll('#tab-plan .week-block').forEach(b => b.classList.remove('collapsed'));
+  window.planCollapseAll = () => document.querySelectorAll('#tab-plan .week-block').forEach(b => b.classList.add('collapsed'));
 })();
 </script>
 
