@@ -37,39 +37,222 @@ TARGET_PACES = {
     "recovery": ("10:30", "11:00"),
 }
 
+# Realistic easy-run pace used to convert durations → mileage estimates.
+# Kevin's easy runs sit around 10:30/mi, so 45min easy ≈ 4.3mi (not 4.5).
+EASY_PACE_SEC = 630  # 10:30/mi
+
+# Keywords that mark a run as a quality/FFRT session. FFRP = Fleet Feet
+# Racing Performance = same as FFRT. "funnel" covers Funnel of Fun workouts.
+WORKOUT_KEYWORDS = [
+    "ffrt", "ffrp", "fartlek", "yasso", "tempo", "threshold", "workout",
+    "interval", "ladder", "michigan", "matrix", "lumberjack", "relay",
+    "blastoff", "half time", "funnel", "progression", "sandwich",
+]
+
+
+def est_miles_from_minutes(minutes, pace_sec=EASY_PACE_SEC):
+    """Convert an easy-run duration (minutes) to a mileage estimate."""
+    return minutes * 60.0 / pace_sec
+
+
 WEEKLY_PLAN = {
-    1:  {"miles": 33,  "phase": "Race",     "key": "Half Time Fartlek + Chicago 13.1"},
-    2:  {"miles": 25,  "phase": "Recovery", "key": "Post-race recovery — easy all week, no FFRT, 10-12mi Sat"},
+    1:  {"miles": 32,  "phase": "Race",     "key": "Half Time Fartlek + Chicago 13.1"},
+    2:  {"miles": 27,  "phase": "Recovery", "key": "Post-race recovery — easy all week, no FFRT, 10-12mi Sat"},
     3:  {"miles": 36,  "phase": "Base",     "key": "Funnel of Fun + 12mi easy"},
-    4:  {"miles": 39,  "phase": "Base",     "key": "Yasso 800s + 13mi w/ MP surges"},
+    4:  {"miles": 38,  "phase": "Base",     "key": "Yasso 800s + 13mi w/ MP surges"},
     5:  {"miles": 34,  "phase": "Recovery", "key": "2min on/off + 11mi easy"},
-    6:  {"miles": 42,  "phase": "Build",    "key": "Progression + 3x3 Matrix + 14mi"},
-    7:  {"miles": 43,  "phase": "Build",    "key": "Ladder + 15mi w/ MP/float"},
-    8:  {"miles": 47,  "phase": "Build",    "key": "Michigan + 16mi 3x2@MP"},
-    9:  {"miles": 38,  "phase": "Recovery", "key": "Lumberjack + 13mi easy"},
-    10: {"miles": 53,  "phase": "Peak",     "key": "HMP tempo + 1K Sandwich + 18mi"},
-    11: {"miles": 52,  "phase": "Peak",     "key": "10min threshold + 19mi 4x3@MP"},
-    12: {"miles": 38,  "phase": "Recovery", "key": "5K Partner Relay + 13mi easy"},
-    13: {"miles": 53,  "phase": "Peak",     "key": "Modified Tempo + 18mi 3x4@MP"},
-    14: {"miles": 55,  "phase": "Peak",     "key": "Threshold + 20.5mi w/ 10@GMP"},
-    15: {"miles": 40,  "phase": "Peak",     "key": "In & Out Tempo + Hidden Gem Half"},
+    6:  {"miles": 41,  "phase": "Build",    "key": "Progression + 3x3 Matrix + 14mi"},
+    7:  {"miles": 41,  "phase": "Build",    "key": "Ladder + 15mi w/ MP/float"},
+    8:  {"miles": 45,  "phase": "Build",    "key": "Michigan + 16mi 3x2@MP"},
+    9:  {"miles": 37,  "phase": "Recovery", "key": "Lumberjack + 13mi easy"},
+    10: {"miles": 52,  "phase": "Peak",     "key": "HMP tempo + 1K Sandwich + 18mi"},
+    11: {"miles": 50,  "phase": "Peak",     "key": "10min threshold + 19mi 4x3@MP"},
+    12: {"miles": 36,  "phase": "Recovery", "key": "5K Partner Relay + 13mi easy"},
+    13: {"miles": 51,  "phase": "Peak",     "key": "Modified Tempo + 18mi 3x4@MP"},
+    14: {"miles": 53,  "phase": "Peak",     "key": "Threshold + 20.5mi w/ 10@GMP"},
+    15: {"miles": 39,  "phase": "Peak",     "key": "In & Out Tempo + Hidden Gem Half"},
     16: {"miles": 53,  "phase": "Peak",     "key": "Yassos + 20mi opt 4@MP"},
-    17: {"miles": 50,  "phase": "Taper 1",  "key": "2mi reps + 19mi 8@MP+2@HMP"},
-    18: {"miles": 34,  "phase": "Taper 2",  "key": "Root Beer Float + 11mi easy"},
+    17: {"miles": 48,  "phase": "Taper 1",  "key": "2mi reps + 19mi 8@MP+2@HMP"},
+    18: {"miles": 33,  "phase": "Taper 2",  "key": "Root Beer Float + 11mi easy"},
     19: {"miles": 17,  "phase": "Race Week","key": "Pre-race 3@MP + Chicago Marathon"},
 }
 
-# Day-by-day schedule for weeks that deviate from the standard template
-# Each entry: (Day, Run, Notes)
+# Day-by-day schedule for weeks rendered dynamically (past + current weeks).
+# Each entry: (Day, Run, Notes, planned_miles, kind)
+#   planned_miles — estimate at realistic pace; None for rest days
+#   kind          — easy | quality | long | rest | race  (drives the dot + column)
+# Easy planned miles use EASY_PACE_SEC (10:30/mi); workout/long use plan mileage.
 WEEK_SCHEDULE = {
+    1: [
+        ("Mon", "45–55min easy + HAF",        "",                              4.8,  "easy"),
+        ("Tue", "45min easy",                  "",                              4.3,  "easy"),
+        ("Wed", "Half Time Fartlek (FFRT)",    "8mi quality.",                  8.0,  "quality"),
+        ("Thu", "REST",                        "",                              None, "rest"),
+        ("Fri", "20min + strides",             "Pre-race shakeout.",            2.0,  "easy"),
+        ("Sat", "REST",                        "Lay out race kit. Hydrate. Sleep.", None, "rest"),
+        ("Sun", "CHICAGO 13.1 — FULL SEND",    "1:52:21 (8:27/mi).",            13.1, "race"),
+    ],
     2: [
-        ("Mon", "20–25min easy or rest", "No strides. HAF fine if upper body."),
-        ("Tue", "45–50min easy (~4.5mi)", "Still no strides. Just aerobic."),
-        ("Wed", "40–50min easy (~4mi)",   "Instead of FFRT. 10:00–10:30 pace."),
-        ("Thu", "REST / optional Lagree", ""),
-        ("Fri", "50min easy + HAF",       "Back to normal."),
-        ("Sat", "10–12mi easy",           "The priority. Arrive fresh."),
-        ("Sun", "REST",                   ""),
+        ("Mon", "20–25min easy or rest",       "No strides. HAF fine if upper body.", 2.0,  "easy"),
+        ("Tue", "45–50min easy",               "Still no strides. Just aerobic.",     4.5,  "easy"),
+        ("Wed", "40–50min easy",               "Instead of FFRT. 10:00–10:30 pace.",  4.3,  "easy"),
+        ("Thu", "REST / optional Lagree",      "",                                    None, "rest"),
+        ("Fri", "50min easy + HAF",            "Back to normal.",                     4.8,  "easy"),
+        ("Sat", "10–12mi easy",                "The priority. Arrive fresh.",         11.0, "long"),
+        ("Sun", "REST",                        "",                                    None, "rest"),
+    ],
+    3: [
+        ("Mon", "50min easy + HAF",            "",                                    4.8,  "easy"),
+        ("Tue", "65min easy ★ — first extended Tue", "",                              6.2,  "easy"),
+        ("Wed", "Funnel of Fun: 15@GMP+10, 10@HMP, 1–3x5@10K — FFRT + HAF", "",       8.0,  "quality"),
+        ("Thu", "REST · Optional Lagree",      "",                                    None, "rest"),
+        ("Fri", "50min easy + HAF",            "",                                    4.8,  "easy"),
+        ("Sat", "11–13mi easy",                "",                                    12.0, "long"),
+        ("Sun", "REST or recovery · Ricky Byrdsong 8K/5K option", "",                 None, "rest"),
+    ],
+    4: [
+        ("Mon", "55min easy + 6 strides + HAF","",                                    5.2,  "easy"),
+        ("Tue", "75min easy ★",                "",                                    7.1,  "easy"),
+        ("Wed", "Yasso 800s: 8–10x800 @ 3:50–3:55 — FFRT + HAF", "",                  8.0,  "quality"),
+        ("Thu", "REST · Optional Lagree",      "",                                    None, "rest"),
+        ("Fri", "50min easy + HAF",            "",                                    4.8,  "easy"),
+        ("Sat", "12–14mi w/ MP surges (0.25mi/mi for 5–7mi) — FFRT Lincoln Sq", "",   13.0, "long"),
+        ("Sun", "REST or recovery",            "",                                    None, "rest"),
+    ],
+    5: [
+        ("Mon", "50min easy + 6 strides + HAF", "", 4.8, "easy"),
+        ("Tue", "55min easy — recovery week, don't extend", "", 5.2, "easy"),
+        ("Wed", "2min on/off: 6-12x2min @ threshold, 2min @ LR pace — FFRT + HAF", "", 8.0, "quality"),
+        ("Thu", "REST · Optional Lagree", "", None, "rest"),
+        ("Fri", "45min easy + HAF", "", 4.3, "easy"),
+        ("Sat", "10-12mi easy · 4 on the 4th race option (Elmhurst)", "", 11.0, "long"),
+        ("Sun", "REST or recovery", "", None, "rest"),
+    ],
+    6: [
+        ("Mon", "Progression: 3-5mi current MP → GMP + HAF", "", 7.0, "quality"),
+        ("Tue", "80min easy ★ — run by HR in heat", "", 7.6, "easy"),
+        ("Wed", "3x3 Matrix: 2-3 sets of 4x300@mile, 100m jog — FFRT + HAF", "", 7.0, "quality"),
+        ("Thu", "REST · Optional Lagree", "", None, "rest"),
+        ("Fri", "55min easy", "", 5.2, "easy"),
+        ("Sat", "14mi easy (opt last 4@CMP)", "", 14.0, "long"),
+        ("Sun", "REST or recovery", "", None, "rest"),
+    ],
+    7: [
+        ("Mon", "55min easy + HAF", "", 5.2, "easy"),
+        ("Tue", "90min easy ★ — first 90-min Tuesday", "", 8.6, "easy"),
+        ("Wed", "Ladder: 6-10x200, 3-5x400, 1-2x800 (200m recovery) — FFRT + HAF", "", 7.0, "quality"),
+        ("Thu", "REST · Optional Lagree", "", None, "rest"),
+        ("Fri", "55min easy", "", 5.2, "easy"),
+        ("Sat", "15mi w/ 4x(1mi@GMP, 1mi@GMP+30 float)", "", 15.0, "long"),
+        ("Sun", "REST or recovery", "", None, "rest"),
+    ],
+    8: [
+        ("Mon", "55min easy + 6 strides + HAF · First 50-mile week!", "", 5.2, "easy"),
+        ("Tue", "100min easy ★", "", 9.5, "easy"),
+        ("Wed", "Michigan: 1mi@10K, 2K tempo, 1200@5K, 2K tempo, 800@3K, 2K tempo, 400 AUG — FFRT + HAF", "", 9.0, "quality"),
+        ("Thu", "REST · Optional Lagree", "", None, "rest"),
+        ("Fri", "55min easy + HAF — monitor for Sat", "", 5.2, "easy"),
+        ("Sat", "16mi w/ 3x2@MP (1mi EZ recovery) · fuel practice", "", 16.0, "long"),
+        ("Sun", "REST or recovery", "", None, "rest"),
+    ],
+    9: [
+        ("Mon", "50min easy + HAF · Cutback week", "", 4.8, "easy"),
+        ("Tue", "65min easy ★ — don't extend", "", 6.2, "easy"),
+        ("Wed", "Lumberjack: alternating circuits — FFRT + HAF", "", 9.0, "quality"),
+        ("Thu", "REST · Optional Lagree", "", None, "rest"),
+        ("Fri", "45min easy", "", 4.3, "easy"),
+        ("Sat", "13mi easy", "", 13.0, "long"),
+        ("Sun", "REST or recovery", "", None, "rest"),
+    ],
+    10: [
+        ("Mon", "HMP tempo 3-4mi + HAF", "", 7.0, "quality"),
+        ("Tue", "2:05 easy ★", "", 11.9, "easy"),
+        ("Wed", "1K Sandwich: HMP-1K@5K-HMP — FFRT + HAF", "", 10.0, "quality"),
+        ("Thu", "REST · Optional Lagree", "", None, "rest"),
+        ("Fri", "55min easy", "", 5.2, "easy"),
+        ("Sat", "18mi w/ MP progression", "", 18.0, "long"),
+        ("Sun", "REST", "", None, "rest"),
+    ],
+    11: [
+        ("Mon", "55min easy + 6 strides + HAF", "", 5.2, "easy"),
+        ("Tue", "2:05 easy ★", "", 11.9, "easy"),
+        ("Wed", "10min threshold — FFRT + HAF", "", 9.0, "quality"),
+        ("Thu", "REST · Optional Lagree", "", None, "rest"),
+        ("Fri", "55min easy", "", 5.2, "easy"),
+        ("Sat", "19mi w/ 4x3@MP — Waterfall Glen", "", 19.0, "long"),
+        ("Sun", "REST", "", None, "rest"),
+    ],
+    12: [
+        ("Mon", "50min easy + 6 strides + HAF", "", 4.8, "easy"),
+        ("Tue", "75min easy ★", "", 7.1, "easy"),
+        ("Wed", "5K Partner Relay — FFRT + HAF", "", 7.0, "quality"),
+        ("Thu", "REST · Optional Lagree", "", None, "rest"),
+        ("Fri", "45min easy", "", 4.3, "easy"),
+        ("Sat", "13mi easy", "", 13.0, "long"),
+        ("Sun", "REST", "", None, "rest"),
+    ],
+    13: [
+        ("Mon", "55min easy + 8 strides + HAF", "", 5.2, "easy"),
+        ("Tue", "2:15 easy ★", "", 12.9, "easy"),
+        ("Wed", "Modified Tempo — FFRT + HAF", "", 9.0, "quality"),
+        ("Thu", "REST · Optional Lagree", "", None, "rest"),
+        ("Fri", "55min easy", "", 5.2, "easy"),
+        ("Sat", "18mi w/ 3x4@MP — Busse Woods", "", 18.0, "long"),
+        ("Sun", "REST", "", None, "rest"),
+    ],
+    14: [
+        ("Mon", "55min easy + HAF", "", 5.2, "easy"),
+        ("Tue", "2:15 easy ★", "", 12.9, "easy"),
+        ("Wed", "Threshold — FFRT + HAF", "", 9.0, "quality"),
+        ("Thu", "REST · Optional Lagree", "", None, "rest"),
+        ("Fri", "55min easy", "", 5.2, "easy"),
+        ("Sat", "20.5mi w/ 10@GMP — THE BIG ONE", "", 20.5, "long"),
+        ("Sun", "REST", "", None, "rest"),
+    ],
+    15: [
+        ("Mon", "50min easy + HAF", "", 4.8, "easy"),
+        ("Tue", "75min easy ★", "", 7.1, "easy"),
+        ("Wed", "In & Out Tempo — FFRT + HAF", "", 8.0, "quality"),
+        ("Thu", "REST · Optional Lagree", "", None, "rest"),
+        ("Fri", "45min easy", "", 4.3, "easy"),
+        ("Sat", "Hidden Gem Half Marathon — FULL SEND", "", 15.0, "race"),
+        ("Sun", "REST", "", None, "rest"),
+    ],
+    16: [
+        ("Mon", "HMP tempo 3-4mi + HAF", "", 7.0, "quality"),
+        ("Tue", "2:05 easy ★", "", 11.9, "easy"),
+        ("Wed", "Yasso 800s — FFRT + HAF", "", 9.0, "quality"),
+        ("Thu", "REST · Optional Lagree", "", None, "rest"),
+        ("Fri", "50min easy", "", 4.8, "easy"),
+        ("Sat", "20mi (opt last 4@MP) — FF group run · last 20-miler", "", 20.0, "long"),
+        ("Sun", "REST", "", None, "rest"),
+    ],
+    17: [
+        ("Mon", "55min easy + 8 strides + HAF", "", 5.2, "easy"),
+        ("Tue", "1:45 easy ★", "", 10.0, "easy"),
+        ("Wed", "2mi reps + 200s — FFRT + HAF", "", 9.0, "quality"),
+        ("Thu", "REST", "", None, "rest"),
+        ("Fri", "50min easy", "", 4.8, "easy"),
+        ("Sat", "19mi w/ 8@MP + 2@HMP — Going South", "", 19.0, "long"),
+        ("Sun", "REST", "", None, "rest"),
+    ],
+    18: [
+        ("Mon", "50min easy + light HAF", "", 4.8, "easy"),
+        ("Tue", "55min easy", "", 5.2, "easy"),
+        ("Wed", "Root Beer Float — FFRT + light HAF", "", 8.0, "quality"),
+        ("Thu", "REST", "", None, "rest"),
+        ("Fri", "45min easy", "", 4.3, "easy"),
+        ("Sat", "11mi easy", "", 11.0, "long"),
+        ("Sun", "REST", "", None, "rest"),
+    ],
+    19: [
+        ("Mon", "50min easy — course viz w/ FFRT", "", 4.8, "easy"),
+        ("Tue", "35min easy", "", 3.3, "easy"),
+        ("Wed", "Pre-race: 3@MP + 4x200@5K (6mi)", "", 6.0, "quality"),
+        ("Thu", "REST or cross train", "", None, "rest"),
+        ("Fri", "REST", "", None, "rest"),
+        ("Sat", "20-30min shakeout", "", 2.4, "easy"),
+        ("Sun", "🏆 CHICAGO MARATHON · RELENTLESS · Sub-3:55", "", None, "race"),
     ],
 }
 
@@ -159,7 +342,8 @@ def classify_run(run):
     dist = float(run.get("distance_miles", 0) or 0)
     pace_s = pace_to_seconds(run.get("pace_per_mile", ""))
 
-    if any(k in name for k in ["race", "marathon", "half", "10k", "5k", "shuffle", "soldier", "hidden gem", "ffrt", "fartlek", "yasso", "tempo", "threshold", "workout", "interval", "ladder", "michigan", "matrix", "lumberjack", "blastoff", "relay"]):
+    race_kw = ["race", "marathon", "half", "10k", "5k", "shuffle", "soldier", "hidden gem"]
+    if any(k in name for k in race_kw + WORKOUT_KEYWORDS):
         return "quality"
     if dist >= 12:
         return "long"
@@ -233,11 +417,7 @@ def is_race_activity(run):
 
 def is_workout_activity(run):
     nl = run.get("name", "").lower()
-    return any(k in nl for k in [
-        "ffrt", "fartlek", "yasso", "tempo", "threshold", "workout",
-        "interval", "ladder", "michigan", "matrix", "lumberjack",
-        "relay", "blastoff", "half time",
-    ])
+    return any(k in nl for k in WORKOUT_KEYWORDS)
 
 
 # ── Weekly mileage history for the block ────────────────────────────────────
@@ -692,6 +872,69 @@ def _find_workout_details(key_session_str):
     return None
 
 
+def _workout_sentence(run, laps, lead="", capitalize=False):
+    """One sentence describing a quality session with pace-vs-target analysis."""
+    name = run.get("name", "")
+    dist = float(run.get("distance_miles", 0) or 0)
+    pace = run.get("pace_per_mile", "—")
+    hr = run.get("average_heartrate", "")
+    try:
+        hr_str = f", HR {int(float(hr))}" if hr else ""
+    except (TypeError, ValueError):
+        hr_str = ""
+    rl = laps_for_activity(laps, run.get("strava_id", ""))
+    paces = [pace_to_seconds(l.get("lap_pace_per_mile", "")) for l in rl]
+    paces = [p for p in paces if p]
+    s = f"{lead}{name}, covered {dist:.1f}mi at {pace}/mi avg{hr_str}."
+    if paces:
+        quality = [p for p in paces if p < pace_to_seconds("8:52")]   # at/under MP
+        if quality:
+            sub_hmp = sum(1 for p in quality if p < pace_to_seconds("8:34"))
+            fastest_str = seconds_to_pace(min(paces))
+            rep = "rep" if len(quality) == 1 else "reps"
+            if sub_hmp:
+                s += (f" {len(quality)} {rep} at marathon pace or faster, {sub_hmp} of them under HMP "
+                      f"(8:34), topping out at {fastest_str}/mi — the speed is firing.")
+            else:
+                s += f" {len(quality)} {rep} at marathon pace or quicker, fastest {fastest_str}/mi."
+    return s
+
+
+def _long_run_pace_note(pace, hr):
+    """Short note comparing long-run pace to the easy zone + HR read."""
+    ps = pace_to_seconds(pace)
+    parts = []
+    try:
+        if hr:
+            parts.append(f"HR {int(float(hr))}")
+    except (TypeError, ValueError):
+        pass
+    if ps:
+        if ps < pace_to_seconds("9:57"):
+            parts.append("a touch quicker than easy")
+        elif ps <= pace_to_seconds("10:56"):
+            parts.append("right in the easy zone")
+        else:
+            parts.append("controlled and aerobic")
+    return ", ".join(parts) if parts else "—"
+
+
+def _mileage_takeaway(actual, target, finished):
+    """One sentence on mileage vs target."""
+    try:
+        tgt = float(target)
+    except (TypeError, ValueError):
+        tgt = 0
+    pct = (actual / tgt * 100) if tgt else 0
+    if tgt and actual >= tgt * 0.98:
+        return f"Mileage came in at {actual:.1f} against a {target}mi target — right on plan."
+    if not finished:
+        return f"{actual:.1f}mi in so far against a {target}mi target — week's still going."
+    if pct >= 90:
+        return f"{actual:.1f}mi against a {target}mi target — close enough; absorb it and move on."
+    return f"{actual:.1f}mi against a {target}mi target — ran a little light, bank it and stay consistent."
+
+
 def generate_exec_summary_html(week_num, phase, week_runs, laps, race_run, workout_run, long_run, actual_miles, target_miles):
     """Generate a headline + narrative executive summary for the week."""
     week_finished = datetime.now() > (BLOCK_START + timedelta(weeks=week_num))
@@ -735,60 +978,56 @@ def generate_exec_summary_html(week_num, phase, week_runs, laps, race_run, worko
         headline = f"{lr_dist:.0f}-Miler Done: Muscular Endurance Building"
         narrative = (
             f"The long run is the backbone of marathon training, and this week's {lr_dist:.1f}-miler at {lr_pace}/mi "
-            f"(HR {lr_hr}) is exactly the kind of stimulus that builds the fatigue resistance you need for miles 17–26. "
+            f"({_long_run_pace_note(lr_pace, lr_hr)}) is exactly the stimulus that builds the fatigue resistance you need for miles 17–26. "
         )
         if workout_run:
-            w_pace = workout_run.get("pace_per_mile", "—")
-            narrative += (
-                f"Stacking this on top of a quality FFRT session at {w_pace}/mi avg earlier in the week is how "
-                f"the aerobic ceiling gets raised — two different stressors, one week, one adaptation."
-            )
+            narrative += _workout_sentence(workout_run, laps, lead="Earlier in the week, ")
+            narrative += " Two different stressors, one week, one adaptation."
         else:
-            narrative += "Keep showing up to the FFRT on Tuesday — the combination of speed work and long mileage is where the gains come from."
+            narrative += "Keep showing up to the FFRT midweek — the combination of speed work and long mileage is where the gains come from."
 
     elif workout_run:
-        w_name = workout_run.get("name", "")
-        w_pace = workout_run.get("pace_per_mile", "—")
-        w_hr   = workout_run.get("average_heartrate", "—")
         w_dist = float(workout_run.get("distance_miles", 0) or 0)
-        w_laps = laps_for_activity(laps, workout_run.get("strava_id", ""))
-        fast = [l for l in w_laps if pace_to_seconds(l.get("lap_pace_per_mile", "")) and
-                pace_to_seconds(l.get("lap_pace_per_mile", "")) < pace_to_seconds("8:30")]
-        fastest_lap = min(fast, key=lambda l: pace_to_seconds(l.get("lap_pace_per_mile", "")), default=None)
 
-        headline = f"Workout Week: Quality Over Quantity"
+        headline = f"Workout + Long Run: Both Boxes Checked" if (long_run and float(long_run.get("distance_miles",0) or 0) >= 10) else "Workout Week: Quality Over Quantity"
         if phase == "Peak":
             headline = "Peak Block: Hard Week in the Books"
         elif phase == "Recovery":
-            headline = "Recovery Week: Smart Training Is Staying Fresh"
+            headline = "Recovery Week: Sharp but Fresh"
 
-        narrative = (
-            f"This week's key session — {w_name} — logged {w_dist:.1f}mi at {w_pace}/mi avg (HR {w_hr}). "
-        )
-        if fastest_lap:
-            narrative += f"Fastest interval: {fastest_lap.get('lap_pace_per_mile','—')}/mi — the speed system is responding. "
-        if not long_run:
-            narrative += f"Long run still to come — that's where this week's mileage comes together. "
-        elif float(long_run.get("distance_miles", 0) or 0) >= 10:
+        # Sentence 1: the workout, with pace-vs-target analysis
+        narrative = _workout_sentence(workout_run, laps, lead="The key session, ", capitalize=True) + " "
+        # Sentence 2: the long run
+        if long_run and float(long_run.get("distance_miles", 0) or 0) >= 10:
+            lr_dist = float(long_run.get("distance_miles", 0) or 0)
             lr_pace = long_run.get("pace_per_mile", "—")
+            lr_hr   = long_run.get("average_heartrate", "—")
             narrative += (
-                f"Combined with the {float(long_run.get('distance_miles',0)):.1f}-miler at {lr_pace}/mi, "
-                f"you've hit both the speed stimulus and the aerobic volume this week needs."
+                f"The {lr_dist:.1f}mi long run at {lr_pace}/mi ({_long_run_pace_note(lr_pace, lr_hr)}) covered the aerobic side — "
+                f"time on feet building the miles-17–26 endurance that's the whole point of this block. "
             )
+        elif not long_run:
+            narrative += "Long run still to come this weekend — that's where the week's volume comes together. "
+        # Sentence 3: takeaway vs target
+        narrative += _mileage_takeaway(actual_miles, target_miles, week_finished)
 
     else:
-        # Generic — easy week or incomplete data
-        pct = (actual_miles / target_miles * 100) if target_miles else 0
+        # Generic — easy/recovery week, possibly with a long run but no quality session
         headline = f"Week {week_num}: {phase} Phase Underway"
-        if pct >= 90:
+        if long_run and float(long_run.get("distance_miles", 0) or 0) >= 10:
+            lr_dist = float(long_run.get("distance_miles", 0) or 0)
+            lr_pace = long_run.get("pace_per_mile", "—")
+            lr_hr   = long_run.get("average_heartrate", "—")
+            headline = f"Easy Week Anchored by a {lr_dist:.0f}-Miler"
             narrative = (
-                f"Solid mileage week — {actual_miles:.1f}mi logged against a {target_miles}mi target. "
-                f"Easy weeks build the aerobic base that quality sessions run on. Don't skip the easy stuff."
+                f"No hard session this week by design — the work was aerobic. The {lr_dist:.1f}mi long run at {lr_pace}/mi "
+                f"({_long_run_pace_note(lr_pace, lr_hr)}) was the centerpiece, with easy mileage filling in around it. "
+                f"{_mileage_takeaway(actual_miles, target_miles, week_finished)}"
             )
         else:
             narrative = (
-                f"{actual_miles:.1f}mi logged so far against a {target_miles}mi target. "
-                f"{'Week is still in progress.' if not week_finished else 'Short week — happens. Stay consistent going forward.'}"
+                f"{_mileage_takeaway(actual_miles, target_miles, week_finished)} "
+                f"Easy weeks build the aerobic base that quality sessions run on. Don't skip the easy stuff."
             )
 
     return f'''
@@ -843,11 +1082,11 @@ def generate_whats_next_html(week_num, today):
             narrative = f"Week {next_week} ({next_miles}mi · {next_phase}): <strong>{next_key}</strong>"
             rows = "".join(
                 f'<tr>'
-                f'<td style="padding:6px 10px 6px 0;font-weight:600;color:var(--text);white-space:nowrap;">{d}</td>'
-                f'<td style="padding:6px 10px;color:var(--muted);">{r}</td>'
-                f'<td style="padding:6px 0;font-size:12px;color:var(--muted);opacity:.7;">{n}</td>'
+                f'<td style="padding:6px 10px 6px 0;font-weight:600;color:var(--text);white-space:nowrap;">{entry[0]}</td>'
+                f'<td style="padding:6px 10px;color:var(--muted);">{entry[1]}</td>'
+                f'<td style="padding:6px 0;font-size:12px;color:var(--muted);opacity:.7;">{entry[2]}</td>'
                 f'</tr>'
-                for d, r, n in schedule
+                for entry in schedule
             )
             pace_block = (
                 f'<div style="background:var(--surface2);border-radius:8px;padding:12px;margin:12px 0;">'
@@ -936,9 +1175,7 @@ def generate_week_review_html(activities, laps):
             race_run = r
         if is_workout_activity(r):
             workout_run = r
-        if any(k in name_l for k in ["ffrt", "fartlek", "yasso", "tempo", "threshold", "workout",
-                                      "interval", "ladder", "michigan", "matrix", "lumberjack",
-                                      "relay", "blastoff", "half time"]):
+        if any(k in name_l for k in WORKOUT_KEYWORDS):
             quality_run = r
         if d >= 10:
             long_run = r
@@ -1108,16 +1345,23 @@ def generate_block_summary_html(activities, laps):
         if easy_paces:
             pace_trend[w] = sum(easy_paces) / len(easy_paces)
 
-    # Quality sessions hit
+    # Quality sessions hit. Only count *finished* weeks that actually had a
+    # quality session on the plan — recovery weeks with no FFRT and the current
+    # in-progress week (before its workout day) shouldn't count against attendance.
     quality_hit = 0
     quality_total = 0
     for w in range(1, week_num + 1):
         start, end = week_date_range(w)
+        sched = WEEK_SCHEDULE.get(w, [])
+        planned_quality = any(e[4] == "quality" for e in sched) if sched else True
+        week_done = today > end
+        if not planned_quality or not week_done:
+            continue
         quality_total += 1
         week_runs = runs_in_range(activities, start, end)
         for r in week_runs:
             name = r.get("name", "").lower()
-            if any(k in name for k in ["ffrt", "fartlek", "yasso", "tempo", "threshold", "workout", "interval", "ladder", "michigan", "matrix", "lumberjack", "relay", "blastoff", "half time"]):
+            if any(k in name for k in WORKOUT_KEYWORDS):
                 quality_hit += 1
                 break
 
@@ -1400,6 +1644,22 @@ def generate_where_im_at_html(activities, laps):
         fivek_str         = "7:35 – 7:45"
         pace_note = '<p style="font-size:11px; margin-top:12px;">Will update after Chicago 13.1 result.</p>'
 
+    # Race-equivalent strip (shown above the pace table)
+    def _equiv_tile(label, value, color):
+        return (f'<div style="flex:1;min-width:84px;background:var(--surface2);border-radius:8px;padding:9px 8px;text-align:center;">'
+                f'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:3px;">{label}</div>'
+                f'<div style="font-size:17px;font-weight:700;color:{color};">{value}</div></div>')
+    if chicago_13:
+        race_equiv_html = (
+            '<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">'
+            + _equiv_tile("Marathon equiv", "3:52:35", "var(--accent3)")
+            + _equiv_tile("Half (actual)", "1:52:21", "var(--accent2)")
+            + _equiv_tile("Goal", "3:55", "var(--accent4)")
+            + '</div>'
+        )
+    else:
+        race_equiv_html = ""
+
     updated = today.strftime("%A, %B %d at %-I:%M %p")
 
     return f'''
@@ -1408,53 +1668,33 @@ def generate_where_im_at_html(activities, laps):
     <p>{intro}</p>
   </div>
 
-  <div class="grid-4" style="margin-bottom: 20px;">
-    <div class="card-sm">
-      <div class="stat-label">London Result</div>
-      <div class="stat-value orange">4:19:37</div>
-      <div class="stat-sub">Best since 2018 PR</div>
-    </div>
-    <div class="card-sm">
-      <div class="stat-label">Chicago 13.1</div>
-      <div class="stat-value blue">{parse_time_from_name(chicago_13.get("name","")) and format_duration(parse_time_from_name(chicago_13.get("name",""))) or "TBD"}</div>
-      <div class="stat-sub">{"8:27/mi · HR 166 · Jun 7" if chicago_13 else "Jun 7 — race day"}</div>
-    </div>
-    <div class="card-sm">
-      <div class="stat-label">Last 4 Weeks Avg</div>
-      <div class="stat-value green">{avg_weekly:.0f}mi</div>
-      <div class="stat-sub">{"Week 1 underway" if week_num <= 1 else f"Wk {week_num} of 19"}</div>
-    </div>
-    <div class="card-sm">
-      <div class="stat-label">Chicago Target</div>
-      <div class="stat-value yellow">3:55</div>
-      <div class="stat-sub">8:58/mi · 24min PR</div>
-    </div>
-  </div>
-
-  <div class="grid-2" style="margin-bottom: 20px;">
-    <div class="card">
-      <h3>Recent Runs</h3>
-      {run_rows_html}
-    </div>
-    <div>
-      <div class="card" style="margin-bottom: 16px;">
-        <h3>What the Data Says</h3>
-        <div class="highlight blue" style="margin-bottom: 12px;">
-          <div class="highlight-title">Aerobic Base: Strong</div>
-          <p>Soldier Field 10 at 9:04/mi with HR 157 on May 23 — 4 weeks post-London — is a meaningful fitness signal. Easy runs sitting 10:15–10:45 at HR 130–140, exactly where they should be.</p>
-        </div>
-        <div class="highlight orange" style="margin-bottom: 12px;">
-          <div class="highlight-title">Muscular Endurance: The Gap</div>
-          <p>London confirmed: you can run 16 miles at marathon pace. Miles 17–26 are where the legs give out — not the lungs. Tuesday mid-week long runs (building to 12–14mi) directly target this.</p>
-        </div>
-        <div class="highlight green" style="margin-bottom: 0;">
-          <div class="highlight-title">Speed: There</div>
-          <p>Shamrock Shuffle 39:44 (7:25/mi). Half Time Fartlek closing at 7:30. Speed system is healthy — the issue is sustaining it past mile 18, not generating it.</p>
-        </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;align-items:start;">
+    <div class="grid-2" style="gap:12px;">
+      <div class="card-sm">
+        <div class="stat-label">London Result</div>
+        <div class="stat-value orange">4:19:37</div>
+        <div class="stat-sub">Best since 2018 PR</div>
       </div>
-      <div class="card">
-        <h3>Training Paces</h3>
-        <div class="pace-row"><div class="pace-name"><span class="dot dot-easy"></span>Easy / Aerobic</div>
+      <div class="card-sm">
+        <div class="stat-label">Chicago 13.1</div>
+        <div class="stat-value blue">{parse_time_from_name(chicago_13.get("name","")) and format_duration(parse_time_from_name(chicago_13.get("name",""))) or "TBD"}</div>
+        <div class="stat-sub">{"8:27/mi · HR 166 · Jun 7" if chicago_13 else "Jun 7 — race day"}</div>
+      </div>
+      <div class="card-sm">
+        <div class="stat-label">Last 4 Weeks Avg</div>
+        <div class="stat-value green">{avg_weekly:.0f}mi</div>
+        <div class="stat-sub">{"Week 1 underway" if week_num <= 1 else f"Wk {week_num} of 19"}</div>
+      </div>
+      <div class="card-sm">
+        <div class="stat-label">Chicago Target</div>
+        <div class="stat-value yellow">3:55</div>
+        <div class="stat-sub">8:58/mi · 24min PR</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Training Paces &amp; Race Equivalents</h3>
+      {race_equiv_html}
+      <div class="pace-row"><div class="pace-name"><span class="dot dot-easy"></span>Easy / Aerobic</div>
           <div class="pace-val" style="color:var(--easy)">{easy_lo} – {easy_hi}</div></div>
         <div class="pace-row"><div class="pace-name"><span class="dot dot-easy"></span>Recovery</div>
           <div class="pace-val" style="color:var(--muted)">{rec_lo} – {rec_hi}</div></div>
@@ -1471,6 +1711,27 @@ def generate_where_im_at_html(activities, laps):
         <div class="pace-row"><div class="pace-name"><span class="dot dot-quality"></span>Repetition</div>
           <div class="pace-val" style="color:var(--accent2)">{rep_str}</div></div>
         {pace_note}
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 20px;">
+    <div class="card">
+      <h3>Recent Runs</h3>
+      {run_rows_html}
+    </div>
+    <div class="card">
+      <h3>What the Data Says</h3>
+      <div class="highlight blue" style="margin-bottom: 12px;">
+        <div class="highlight-title">Aerobic Base: Strong</div>
+        <p>Soldier Field 10 at 9:04/mi with HR 157 on May 23 — 4 weeks post-London — is a meaningful fitness signal. Easy runs sitting 10:15–10:45 at HR 130–140, exactly where they should be.</p>
+      </div>
+      <div class="highlight orange" style="margin-bottom: 12px;">
+        <div class="highlight-title">Muscular Endurance: The Gap</div>
+        <p>London confirmed: you can run 16 miles at marathon pace. Miles 17–26 are where the legs give out — not the lungs. Tuesday mid-week long runs (building to 12–14mi) directly target this.</p>
+      </div>
+      <div class="highlight green" style="margin-bottom: 0;">
+        <div class="highlight-title">Speed: There</div>
+        <p>Shamrock Shuffle 39:44 (7:25/mi). Half Time Fartlek closing at 7:30. Speed system is healthy — the issue is sustaining it past mile 18, not generating it.</p>
       </div>
     </div>
   </div>
@@ -1564,13 +1825,16 @@ def generate_plan_week_html(week_num, activities):
     w_start, w_end = week_date_range(week_num)
     today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
-    # Build lookup: date string → best run activity
+    # Build lookups: date string → best run activity, and total miles that day
+    # (Kevin sometimes splits a run into two activities; the day total sums them.)
     run_by_date = {}
+    miles_by_date = {}
     for a in activities:
         if a.get("type") != "Run":
             continue
         d = a.get("date", "")[:10]
         dist = float(a.get("distance_miles", 0) or 0)
+        miles_by_date[d] = miles_by_date.get(d, 0.0) + dist
         if d not in run_by_date or dist > float(run_by_date[d].get("distance_miles", 0) or 0):
             run_by_date[d] = a
 
@@ -1578,23 +1842,34 @@ def generate_plan_week_html(week_num, activities):
 
     schedule = WEEK_SCHEDULE.get(week_num)
     if schedule:
-        # Use the custom day schedule
+        # Use the custom day schedule. Tuple = (day, desc, notes, planned_miles, kind)
         days = []
-        day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-        for i, (day_name, run_desc, notes) in enumerate(schedule):
+        for i, entry in enumerate(schedule):
+            day_name, run_desc, notes, planned, kind = entry
             date = w_start + timedelta(days=i)
             date_str = date.strftime("%b %-d")
             date_key = date.strftime("%Y-%m-%d")
             is_past = date < today
-            is_rest = run_desc.upper().startswith("REST")
-            is_long = "mi easy" in run_desc.lower() and ("10" in run_desc or "11" in run_desc or "12" in run_desc)
-
-            dot = "dot-rest" if is_rest else ("dot-long" if is_long else "dot-easy")
-            done_class = " done" if is_past else ""
-            check = CHECK if is_past else ""
-
             run = run_by_date.get(date_key)
-            miles_str = f"{float(run.get('distance_miles',0)):.1f}mi ✓" if run else ("—" if is_rest else "")
+            is_rest = kind == "rest"
+
+            dot = f"dot-{kind}"
+            # Mark a day done once it's in the past OR has a logged activity.
+            is_done = is_past or (run is not None)
+            done_class = " done" if is_done else ""
+            check = CHECK if is_done else ""
+
+            # Miles column: actuals win; past unlogged days show a dash (don't
+            # pass off an estimate as completed); future days show the estimate.
+            if run is not None:
+                miles_str = f"{miles_by_date.get(date_key, 0.0):.1f}mi ✓"
+            elif is_rest or is_past or planned is None:
+                miles_str = "—" if (is_rest or is_past) else ""
+            elif kind == "easy":
+                miles_str = f"~{planned:.1f}mi"
+            else:
+                # whole-number for workouts/long runs unless it has a fraction
+                miles_str = f"{planned:.1f}mi" if planned % 1 else f"{planned:.0f}mi"
 
             note_html = f' <span style="font-size:11px;color:var(--muted);opacity:.7;">· {notes}</span>' if notes else ""
             days.append(
@@ -1605,7 +1880,7 @@ def generate_plan_week_html(week_num, activities):
             )
         rows_html = "\n      ".join(days)
     else:
-        # Fall back to auto-marking based on date only (future weeks stay static)
+        # No schedule defined — leave a static placeholder
         rows_html = f'<!-- week {week_num} static -->'
 
     week_title = f"{w_start.strftime('%b %-d')}–{w_end.strftime('%-d')}"
@@ -1696,7 +1971,18 @@ def main():
     import subprocess, shutil
     if shutil.which("git"):
         repo_dir = os.path.dirname(os.path.abspath(DASHBOARD_FILE))
-        subprocess.run(["git", "-C", repo_dir, "add", "dashboard.html"],
+
+        # Clear stale lock file if present (can be left by a crashed git process)
+        lock_file = os.path.join(repo_dir, ".git", "index.lock")
+        if os.path.exists(lock_file):
+            try:
+                os.remove(lock_file)
+                print("  Cleared stale .git/index.lock")
+            except OSError as e:
+                print(f"  Warning: could not remove index.lock: {e}")
+
+        subprocess.run(["git", "-C", repo_dir, "add",
+                        "dashboard.html", "strava_activities.csv", "strava_laps.csv"],
                        capture_output=True, text=True)
         subprocess.run(["git", "-C", repo_dir, "config", "user.email", "kdaliva@gmail.com"],
                        capture_output=True, text=True)
@@ -1708,7 +1994,11 @@ def main():
             capture_output=True, text=True
         )
         if commit.returncode != 0:
-            print("  GitHub: no changes to push.")
+            err = commit.stderr.strip() or commit.stdout.strip()
+            if "nothing to commit" in err or "nothing added" in err:
+                print("  GitHub: no changes to push.")
+            else:
+                print(f"  GitHub commit failed: {err}")
         else:
             push = subprocess.run(
                 ["git", "-C", repo_dir, "push"],
