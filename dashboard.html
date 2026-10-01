@@ -585,7 +585,7 @@
 
   <div style="margin-bottom: 28px;">
     <h1>Where I'm At</h1>
-    <p>Week 18 of 19 · 720 block miles logged · 9 days to Chicago.</p>
+    <p>Week 18 of 19 · 720 block miles logged · 10 days to Chicago.</p>
   </div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;align-items:start;">
@@ -680,7 +680,7 @@
     </div>
   </div>
 
-  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Thursday, October 01 at 2:43 PM</div>
+  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Thursday, October 01 at 3:13 PM</div>
 
 <!-- WHERE_AT_END -->
 </div>
@@ -697,7 +697,7 @@
   </div>
 
   <!-- PLAN_PROGRESS_START -->
-<div style="margin-bottom:4px;font-size:13px;color:var(--muted);">Week 18 of 19 &middot; 9 days to Chicago</div>
+<div style="margin-bottom:4px;font-size:13px;color:var(--muted);">Week 18 of 19 &middot; 10 days to Chicago</div>
 <!-- PLAN_PROGRESS_END -->
 
   <!-- Expand/collapse + view toggle controls -->
@@ -1362,7 +1362,7 @@
     <h1>Week 18 in Review</h1>
     <span style="display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(122,122,149,.15);color:var(--muted);">Taper 2</span>
     <span style="font-size:13px;color:var(--muted);">Sep 28 – Oct 04</span>
-    <span style="margin-left:auto;font-size:12px;color:var(--muted);">9 days to Chicago</span>
+    <span style="margin-left:auto;font-size:12px;color:var(--muted);">10 days to Chicago</span>
   </div>
 
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
@@ -1460,7 +1460,7 @@
     </div>
   </div>
 
-  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Thursday, October 01 at 2:43 PM</div>
+  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Thursday, October 01 at 3:13 PM</div>
 
 <!-- WEEK_REVIEW_END -->
 </div>
@@ -1473,13 +1473,13 @@
 
   <div style="margin-bottom:28px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
     <h1>The Block So Far</h1>
-    <span style="font-size:13px;color:var(--muted);">Week 18 of 19 · 9 days to Chicago</span>
+    <span style="font-size:13px;color:var(--muted);">Week 18 of 19 · 10 days to Chicago</span>
   </div>
 
   <div class="card" style="margin-bottom:20px;">
     <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
       <span style="font-size:13px;font-weight:600;">Block Progress</span>
-      <span style="font-size:12px;color:var(--muted);">Week 18 of 19 &middot; 9 days to go</span>
+      <span style="font-size:12px;color:var(--muted);">Week 18 of 19 &middot; 10 days to go</span>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
       <span style="font-size:11px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;">Time</span>
@@ -2147,7 +2147,7 @@
 </div>
   </div>
 
-  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Thursday, October 01 at 2:43 PM</div>
+  <div style="margin-top:20px;font-size:11px;color:var(--muted);text-align:right;">Updated Thursday, October 01 at 3:13 PM</div>
 
 <!-- BLOCK_SUMMARY_END -->
 </div>
@@ -2483,7 +2483,7 @@ function showTab(id) {
   window.scrollTo(0, 0);
 }
 (function() {
-  const d = Math.floor((new Date('2026-10-11T00:00:00') - Date.now()) / 864e5);
+  const d = (t => Math.round((new Date(2026, 9, 11) - new Date(t.getFullYear(), t.getMonth(), t.getDate())) / 864e5))(new Date());
   const n = document.getElementById('tb-days'), m = document.getElementById('tb-msg');
   const a = document.querySelector('.tab.active');
   if (a && window.innerWidth < 1024) a.parentNode.scrollLeft = a.offsetLeft - 60;
